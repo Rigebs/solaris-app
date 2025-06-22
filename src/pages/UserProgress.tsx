@@ -1,23 +1,32 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import clsx from "clsx";
 import MainLayout from "../layouts/MainLayout";
+import RewardModal from "../components/RewardModal";
 
-// Imágenes de prueba (puedes usar tus archivos locales o rutas públicas)
+// Rutas de prueba
 const availableStickers = [
   "/stickers/sticker1.jpg",
   "/stickers/sticker2.jpg",
   "/stickers/sticker3.jpg",
   "/stickers/sticker4.jpg",
-  "/stickers/sticker5.jpg",
+  "/stickers/sticker5.jpg", // Desbloqueable
 ];
 
 export default function UserProgress() {
-  const trufasCompradas = 3;
-
+  const trufasCompradas = 5; // simula que ya llegó
   const [selectedSticker, setSelectedSticker] = useState<string | null>(null);
   const [userStickers, setUserStickers] = useState<(string | null)[]>(
     Array(5).fill(null)
   );
+  const [showModal, setShowModal] = useState(false);
+  const [valeEntregado, setValeEntregado] = useState(false); // solo mostramos una vez
+
+  // Mostrar modal cuando llega a 5 trufas
+  useEffect(() => {
+    if (trufasCompradas === 5 && !valeEntregado) {
+      setShowModal(true);
+    }
+  }, [trufasCompradas, valeEntregado]);
 
   const handleAssignSticker = (index: number) => {
     if (index < trufasCompradas && selectedSticker) {
@@ -30,7 +39,6 @@ export default function UserProgress() {
   return (
     <MainLayout email={null}>
       <div className="flex flex-col lg:flex-row gap-8">
-        {/* Main Content */}
         <div className="flex-1">
           <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-xl shadow mb-8 w-full max-w-2xl mx-auto text-center">
             <p className="text-lg font-semibold">
@@ -80,7 +88,6 @@ export default function UserProgress() {
           </div>
         </div>
 
-        {/* Sidebar: Sticker Selector */}
         <aside className="w-full lg:w-64 bg-yellow-100 p-4 rounded-xl shadow h-fit">
           <h3 className="text-lg font-bold mb-4 text-yellow-800">
             Elige tu sticker 🎨
@@ -88,7 +95,6 @@ export default function UserProgress() {
           <div className="grid grid-cols-3 gap-3">
             {availableStickers.map((src, idx) => {
               const isLocked = idx === 4 && trufasCompradas < 5;
-
               return (
                 <div
                   key={idx}
@@ -118,6 +124,16 @@ export default function UserProgress() {
           </div>
         </aside>
       </div>
+
+      {showModal && (
+        <RewardModal
+          unlockedSticker={availableStickers[4]} // el sticker 5
+          onClose={() => {
+            setShowModal(false);
+            setValeEntregado(true);
+          }}
+        />
+      )}
     </MainLayout>
   );
 }
