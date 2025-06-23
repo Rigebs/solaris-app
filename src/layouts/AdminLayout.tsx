@@ -78,6 +78,14 @@ export default function AdminLayout({ children, email }: AdminLayoutProps) {
             Stickers
           </button>
           <button
+            onClick={() => navigate("/customers/progress")}
+            className="flex items-center gap-2 hover:text-yellow-600"
+          >
+            <FiStar />
+            Progreso clientes
+          </button>
+
+          <button
             onClick={() => navigate("/ventas")}
             className="flex items-center gap-2 hover:text-yellow-600"
           >

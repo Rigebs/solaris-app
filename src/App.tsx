@@ -14,6 +14,7 @@ import UsarVale from "./pages/UseVoucher";
 import RegisterSale from "./pages/RegisterSale";
 import ListOrders from "./pages/ListOrders";
 import Loader from "./components/Loader";
+import CustomerProgress from "./admin/CustomerProgress";
 
 const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL;
 
@@ -108,6 +109,10 @@ function App() {
       <Route
         path="/dashboard"
         element={isAdmin ? <Dashboard /> : <Navigate to="/auth/login" />}
+      />
+      <Route
+        path="/customers/progress"
+        element={isAdmin ? <CustomerProgress /> : <Navigate to="/auth/login" />}
       />
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>
