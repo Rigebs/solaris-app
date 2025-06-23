@@ -21,9 +21,12 @@ export default function RewardModal({
         <h2 className="text-2xl font-bold text-yellow-600 mb-4">
           🎉 ¡Felicidades!
         </h2>
-        <p className="text-gray-700 mb-2">Has ganado un vale de descuento</p>
+        <p className="text-gray-700 mb-2">
+          ¡Ganaste un vale del <strong className="text-yellow-600">15%</strong>{" "}
+          de descuento!
+        </p>
         <p className="text-sm text-gray-500 mb-4">
-          Y desbloqueaste un nuevo sticker:
+          Además, desbloqueaste un nuevo sticker:
         </p>
 
         <motion.img

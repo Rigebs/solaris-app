@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import clsx from "clsx";
 import MainLayout from "../layouts/MainLayout";
 import RewardModal from "../components/RewardModal";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "../clients/supabaseClient";
+import Loader from "../components/Loader";
 
-// Rutas de prueba
 const availableStickers = [
   "/stickers/sticker1.jpg",
   "/stickers/sticker2.jpg",
@@ -13,39 +15,181 @@ const availableStickers = [
 ];
 
 export default function UserProgress() {
-  const trufasCompradas = 5; // simula que ya llegó
   const [selectedSticker, setSelectedSticker] = useState<string | null>(null);
+  const [voucherId, setVoucherId] = useState<string | null>(null);
   const [userStickers, setUserStickers] = useState<(string | null)[]>(
     Array(5).fill(null)
   );
   const [showModal, setShowModal] = useState(false);
-  const [valeEntregado, setValeEntregado] = useState(false); // solo mostramos una vez
+  const [trufasCompradas, setTrufasCompradas] = useState(0);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [customerId, setCustomerId] = useState<string | null>(null);
+  const [loadingVoucherData, setLoadingVoucherData] = useState(true); // 👈 nuevo estado
 
-  // Mostrar modal cuando llega a 5 trufas
+  const navigate = useNavigate();
+
   useEffect(() => {
-    if (trufasCompradas === 5 && !valeEntregado) {
+    const fetchUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (user) {
+        setUserId(user.id);
+      } else {
+        navigate("/login");
+      }
+    };
+    fetchUser();
+  }, [navigate]);
+
+  useEffect(() => {
+    const fetchCustomer = async () => {
+      if (!userId) return;
+
+      const { data, error } = await supabase
+        .from("customers")
+        .select("id, voucher_progress")
+        .eq("user_id", userId)
+        .single();
+
+      if (error || !data) {
+        console.error("Error obteniendo customer:", error);
+        return;
+      }
+
+      setCustomerId(data.id);
+      if (typeof data.voucher_progress === "number") {
+        setTrufasCompradas(data.voucher_progress);
+      }
+    };
+
+    fetchCustomer();
+  }, [userId]);
+
+  useEffect(() => {
+    const alreadyShown = localStorage.getItem("valeMostrado") === "true";
+    if (trufasCompradas >= 5 && !alreadyShown) {
       setShowModal(true);
     }
-  }, [trufasCompradas, valeEntregado]);
+  }, [trufasCompradas]);
 
-  const handleAssignSticker = (index: number) => {
-    if (index < trufasCompradas && selectedSticker) {
+  useEffect(() => {
+    const fetchVoucherAndStickers = async () => {
+      if (!customerId) return;
+
+      setLoadingVoucherData(true); // 👈 empezamos a cargar
+
+      const { data: vouchers, error } = await supabase
+        .from("vouchers")
+        .select("id")
+        .eq("customer_id", customerId)
+        .eq("redeemed", false)
+        .order("created_at", { ascending: false })
+        .limit(1);
+
+      if (error || !vouchers || vouchers.length === 0) {
+        console.error("❌ No hay vale activo o error:", error);
+        setLoadingVoucherData(false); // 👈 incluso si hay error, terminamos de cargar
+        return;
+      }
+
+      const voucher = vouchers[0];
+      setVoucherId(voucher.id);
+
+      const { data: stickers, error: stickersError } = await supabase
+        .from("voucher_stickers")
+        .select("position, sticker_url")
+        .eq("voucher_id", voucher.id);
+
+      if (stickersError) {
+        console.error("❌ Error al obtener stickers:", stickersError);
+        setLoadingVoucherData(false);
+        return;
+      }
+
+      const stickerArr = Array(5).fill(null);
+      stickers.forEach((s) => {
+        stickerArr[s.position] = s.sticker_url;
+      });
+      setUserStickers(stickerArr);
+      setLoadingVoucherData(false); // 👈 finalizamos la carga
+    };
+
+    fetchVoucherAndStickers();
+  }, [customerId, trufasCompradas]);
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    localStorage.setItem("valeMostrado", "true");
+  };
+
+  const handleAssignSticker = async (index: number) => {
+    if (!selectedSticker || index >= 5 || !voucherId) return;
+
+    try {
+      const { data: existing, error: fetchError } = await supabase
+        .from("voucher_stickers")
+        .select("id")
+        .eq("voucher_id", voucherId)
+        .eq("position", index)
+        .maybeSingle();
+
+      if (fetchError) {
+        console.error("Error buscando sticker existente:", fetchError);
+        return;
+      }
+
+      if (existing) {
+        const { error: updateError } = await supabase
+          .from("voucher_stickers")
+          .update({ sticker_url: selectedSticker })
+          .eq("id", existing.id);
+
+        if (updateError) {
+          console.error("Error actualizando sticker:", updateError);
+          return;
+        }
+      } else {
+        const { error: insertError } = await supabase
+          .from("voucher_stickers")
+          .insert({
+            voucher_id: voucherId,
+            position: index,
+            sticker_url: selectedSticker,
+          });
+
+        if (insertError) {
+          console.error("Error insertando sticker:", insertError);
+          return;
+        }
+      }
+
       const updated = [...userStickers];
       updated[index] = selectedSticker;
       setUserStickers(updated);
+    } catch (e) {
+      console.error("Error inesperado asignando sticker:", e);
     }
   };
+
+  if (loadingVoucherData) return <Loader />;
 
   return (
     <MainLayout email={null}>
       <div className="flex flex-col lg:flex-row gap-8">
         <div className="flex-1">
-          <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-xl shadow mb-8 w-full max-w-2xl mx-auto text-center">
-            <p className="text-lg font-semibold">
-              ¡Hola, Valentina! 🌟 Este es tu pase dulce. ¡Sigue disfrutando, tu
-              descuento se acerca!
-            </p>
-          </div>
+          {trufasCompradas >= 5 && (
+            <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-xl shadow mb-8 w-full max-w-2xl mx-auto text-center">
+              <p className="text-lg font-semibold">
+                ¡Hola, Valentina! 🌟 Has comprado {trufasCompradas} trufas y
+                ganaste un vale de{" "}
+                <span className="text-yellow-600 font-bold">
+                  15% de descuento
+                </span>
+                . ¡Úsalo cuando quieras!
+              </p>
+            </div>
+          )}
 
           <div className="flex gap-4 justify-center items-center flex-wrap">
             {Array.from({ length: 5 }).map((_, index) => {
@@ -86,6 +230,15 @@ export default function UserProgress() {
               );
             })}
           </div>
+
+          {trufasCompradas >= 5 && (
+            <button
+              onClick={() => navigate("/usar-vale")}
+              className="mt-6 mx-auto block border-2 border-yellow-500 text-yellow-600 px-6 py-3 rounded-xl text-lg font-semibold hover:bg-yellow-100 transition"
+            >
+              🎁 Usar vale de 15%
+            </button>
+          )}
         </div>
 
         <aside className="w-full lg:w-64 bg-yellow-100 p-4 rounded-xl shadow h-fit">
@@ -127,11 +280,8 @@ export default function UserProgress() {
 
       {showModal && (
         <RewardModal
-          unlockedSticker={availableStickers[4]} // el sticker 5
-          onClose={() => {
-            setShowModal(false);
-            setValeEntregado(true);
-          }}
+          unlockedSticker={availableStickers[4]}
+          onClose={handleCloseModal}
         />
       )}
     </MainLayout>

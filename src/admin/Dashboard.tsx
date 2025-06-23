@@ -1,23 +1,9 @@
-import { useEffect, useState } from "react";
-import { FaTicketAlt, FaCookieBite, FaRecycle } from "react-icons/fa";
-import { supabase } from "../clients/supabaseClient";
-import MainLayout from "../layouts/MainLayout";
+import { FaTicketAlt, FaRecycle, FaCookieBite } from "react-icons/fa";
+import AdminLayout from "../layouts/AdminLayout";
 
 export default function Dashboard() {
-  const [userEmail, setUserEmail] = useState<string | null>(null);
-
-  useEffect(() => {
-    const getUser = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      setUserEmail(user?.email || null);
-    };
-    getUser();
-  }, []);
-
   return (
-    <MainLayout email={userEmail}>
+    <AdminLayout>
       <h2 className="text-2xl font-bold text-yellow-600 mb-6">
         ¡Bienvenida de nuevo!
       </h2>
@@ -41,6 +27,6 @@ export default function Dashboard() {
           <span className="text-2xl font-bold text-yellow-600">5</span>
         </div>
       </div>
-    </MainLayout>
+    </AdminLayout>
   );
 }

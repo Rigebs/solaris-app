@@ -1,6 +1,7 @@
 import { FiLogOut } from "react-icons/fi";
 import { supabase } from "../clients/supabaseClient";
 import type { ReactNode } from "react";
+import ChatWidget from "../components/ChatWidget";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -31,7 +32,10 @@ export default function MainLayout({ children, email }: MainLayoutProps) {
         </div>
       </header>
 
-      <main className="flex-1 p-6 relative">{children}</main>
+      <main className="flex-1 p-6 relative">
+        {children}
+        <ChatWidget />
+      </main>
     </div>
   );
 }
