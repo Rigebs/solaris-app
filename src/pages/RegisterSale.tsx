@@ -154,18 +154,41 @@ export default function RegisterSale() {
 
     if (detailsError) {
       alert("Error al guardar detalles de la venta.");
-    } else {
-      alert("Venta registrada con éxito ✔️");
-      setItems([
-        {
-          product_id: products[0]?.id || "",
-          quantity: 1,
-          is_returned: false,
-          usar_vale: false,
-        },
-      ]);
-      setNotes("");
+      return;
     }
+
+    // ✅ Nuevo bloque: verificar si ya tiene voucher
+    const { data: existingVouchers, error: voucherCheckError } = await supabase
+      .from("vouchers")
+      .select("id")
+      .eq("customer_id", selectedCustomerId)
+      .limit(1);
+
+    if (voucherCheckError) {
+      console.error("Error al verificar voucher existente:", voucherCheckError);
+    } else if (!existingVouchers || existingVouchers.length === 0) {
+      // No tiene voucher, insertamos uno nuevo
+      const { error: voucherInsertError } = await supabase
+        .from("vouchers")
+        .insert([{ customer_id: selectedCustomerId, redeemed: false }]);
+
+      if (voucherInsertError) {
+        console.error("Error al crear voucher nuevo:", voucherInsertError);
+      }
+    }
+
+    alert("Venta registrada con éxito ✔️");
+
+    // Reset
+    setItems([
+      {
+        product_id: products[0]?.id || "",
+        quantity: 1,
+        is_returned: false,
+        usar_vale: false,
+      },
+    ]);
+    setNotes("");
   };
 
   return (

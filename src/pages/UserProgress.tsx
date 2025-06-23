@@ -84,7 +84,6 @@ export default function UserProgress() {
         .select("id")
         .eq("customer_id", customerId)
         .eq("redeemed", false)
-        .order("created_at", { ascending: false })
         .limit(1);
 
       if (error || !vouchers || vouchers.length === 0) {

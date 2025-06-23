@@ -4,6 +4,10 @@ import { supabase } from "./clients/supabaseClient";
 import type { Session } from "@supabase/supabase-js";
 
 import Login from "./auth/Login";
+import SignUp from "./auth/SignUp";
+import AuthCallback from "./auth/AuthCallback";
+import CompleteProfile from "./auth/CompleteProfile";
+
 import UserProgress from "./pages/UserProgress";
 import Dashboard from "./admin/Dashboard";
 import UsarVale from "./pages/UseVoucher";
@@ -57,10 +61,24 @@ function App() {
           )
         }
       />
+
       <Route
         path="/auth/login"
         element={!session ? <Login /> : <Navigate to="/" />}
       />
+
+      <Route
+        path="/auth/signup"
+        element={!session ? <SignUp /> : <Navigate to="/" />}
+      />
+
+      <Route path="/auth/callback" element={<AuthCallback />} />
+
+      <Route
+        path="/auth/complete-profile"
+        element={session ? <CompleteProfile /> : <Navigate to="/auth/login" />}
+      />
+
       <Route
         path="/user-progress"
         element={
