@@ -10,12 +10,14 @@ export default function SignUp() {
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
+  const EMAIL_ROOT = import.meta.env.VITE_SUPABASE_REDIRECT_URL;
+
   const handleSignUp = async () => {
     setLoading(true);
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: "http://localhost:5173/auth/callback",
+        emailRedirectTo: `${EMAIL_ROOT}auth/callback`,
       },
     });
 
