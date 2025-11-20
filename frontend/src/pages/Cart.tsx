@@ -14,11 +14,11 @@ export default function Cart() {
     return (
       <div className="text-center py-20">
         <p className="text-2xl font-semibold text-gray-700">
-          Tu carrito está vacío 🧁
+          Tu carrito está vacío
         </p>
         <Link
           to="/"
-          className="mt-6 inline-block bg-pink-600 text-white px-6 py-3 rounded-xl shadow hover:bg-pink-700 transition"
+          className="mt-6 inline-block bg-yellow-500 text-white px-6 py-3 rounded-xl shadow hover:bg-yellow-600 transition"
         >
           Ir a comprar
         </Link>
@@ -33,7 +33,7 @@ export default function Cart() {
         {cart.map((item) => (
           <div
             key={`${item.id}-${item.size}-${JSON.stringify(item.toppings)}`}
-            className="bg-white p-5 rounded-2xl shadow-md border border-pink-100 flex justify-between items-start gap-4 hover:shadow-lg transition"
+            className="bg-white p-5 rounded-2xl shadow-md border border-yellow-100 flex justify-between items-start gap-4 hover:shadow-lg transition"
           >
             <div className="flex gap-4">
               <img
@@ -44,7 +44,7 @@ export default function Cart() {
 
               <div className="flex flex-col justify-between">
                 <div>
-                  <p className="text-lg font-semibold text-pink-700">
+                  <p className="text-lg font-semibold text-yellow-700">
                     {item.name}
                   </p>
 
@@ -69,7 +69,7 @@ export default function Cart() {
                       {item.quantity}
                     </p>
 
-                    <p className="text-pink-600 font-semibold">
+                    <p className="text-yellow-600 font-semibold">
                       ${(item.finalPrice * item.quantity).toFixed(2)}
                     </p>
                   </div>
@@ -90,7 +90,7 @@ export default function Cart() {
       <div className="mt-10 bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
         <div className="pb-4 border-b border-gray-100">
           <p className="text-gray-700 text-base">Subtotal</p>
-          <p className="text-xl font-bold text-pink-600 mt-1">
+          <p className="text-xl font-bold text-yellow-600 mt-1">
             ${total.toFixed(2)}
           </p>
         </div>
@@ -106,8 +106,8 @@ export default function Cart() {
 
           <Link
             to="/checkout"
-            className="w-full sm:w-auto px-6 py-3 rounded-lg bg-pink-600 text-white font-medium 
-                 hover:bg-pink-700 transition shadow-sm"
+            className="w-full sm:w-auto px-6 py-3 rounded-lg bg-yellow-600 text-white font-medium 
+                 hover:bg-yellow-700 transition shadow-sm"
           >
             Proceder al pago
           </Link>

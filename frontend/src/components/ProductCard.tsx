@@ -27,7 +27,7 @@ export default function ProductCard({ product }: Props) {
       />
 
       {/* Nombre */}
-      <h2 className="text-xl font-semibold text-pink-700">{product.name}</h2>
+      <h2 className="text-xl font-semibold text-yellow-700">{product.name}</h2>
 
       {/* Precio base */}
       <p className="text-gray-600 mt-1 font-medium">
@@ -37,7 +37,7 @@ export default function ProductCard({ product }: Props) {
       {/* Link */}
       <Link
         to={`/producto/${product.id}`}
-        className="mt-4 bg-pink-600 text-white py-2 rounded-xl hover:bg-pink-700 text-center"
+        className="mt-4 bg-yellow-500 text-white py-2 rounded-xl hover:bg-yellow-600 text-center"
       >
         Ver más
       </Link>

@@ -12,6 +12,8 @@ import Login from "../pages/Login";
 import Register from "../pages/Register";
 import MainLayout from "../layouts/MainLayout";
 import Orders from "../pages/Orders";
+import Catalog from "../pages/Catalog";
+import CategoryPage from "../pages/CategoryPage";
 
 export default function AppRoutes() {
   return (
@@ -27,6 +29,8 @@ export default function AppRoutes() {
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/cuenta" element={<Account />} />
         <Route path="/pedidos" element={<Orders />} />
+        <Route path="/catalogo" element={<Catalog />} />
+        <Route path="/categoria/:slug" element={<CategoryPage />} />
       </Route>
 
       {/* Rutas de autenticación — sin navbar/footer */}

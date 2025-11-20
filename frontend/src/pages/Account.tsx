@@ -11,7 +11,7 @@ export default function Account() {
         <div className="flex justify-center gap-4">
           <Link
             to="/login"
-            className="bg-pink-600 text-white px-4 py-2 rounded-xl"
+            className="bg-yellow-600 text-white px-4 py-2 rounded-xl"
           >
             Iniciar sesión
           </Link>
@@ -24,7 +24,7 @@ export default function Account() {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <h1 className="text-3xl font-bold text-pink-700 mb-6">
+      <h1 className="text-3xl font-bold text-yellow-700 mb-6">
         Hola, {user.name}
       </h1>
 
@@ -38,7 +38,7 @@ export default function Account() {
         <div className="flex gap-3 mt-4">
           <Link
             to="/pedidos"
-            className="bg-pink-600 text-white px-4 py-2 rounded-xl"
+            className="bg-yellow-600 text-white px-4 py-2 rounded-xl"
           >
             Mis pedidos
           </Link>

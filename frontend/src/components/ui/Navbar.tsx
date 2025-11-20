@@ -23,7 +23,7 @@ export default function Navbar() {
     <nav className="w-full bg-white shadow-sm fixed top-0 left-0 z-50">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         {/* Logo */}
-        <Link to="/" className="text-2xl font-bold text-pink-600">
+        <Link to="/" className="text-2xl font-bold text-yellow-600">
           Solaris
         </Link>
 
@@ -36,7 +36,7 @@ export default function Navbar() {
         <nav className="w-full bg-white shadow-sm fixed top-0 left-0 z-50">
           <div className="container mx-auto px-4 py-3 flex items-center justify-between gap-6">
             {/* Logo */}
-            <Link to="/" className="text-2xl font-bold text-pink-600">
+            <Link to="/" className="text-2xl font-bold text-yellow-600">
               Solaris
             </Link>
 

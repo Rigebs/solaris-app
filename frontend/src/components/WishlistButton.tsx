@@ -12,7 +12,7 @@ export default function WishlistButton({ id }: { id: number }) {
       className="absolute top-3 right-3 bg-white p-2 rounded-full shadow hover:scale-110 transition"
     >
       {active ? (
-        <AiFillHeart size={22} className="text-pink-600" />
+        <AiFillHeart size={22} className="text-yellow-500" />
       ) : (
         <AiOutlineHeart size={22} className="text-gray-600" />
       )}

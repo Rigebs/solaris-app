@@ -10,7 +10,7 @@ export default function Wishlist() {
 
   return (
     <PageWrapper>
-      <h1 className="text-4xl font-bold text-pink-700 mb-6">Tus favoritos</h1>
+      <h1 className="text-4xl font-bold text-yellow-700 mb-6">Tus favoritos</h1>
 
       {items.length === 0 ? (
         <p className="text-gray-600">No tienes productos en favoritos.</p>

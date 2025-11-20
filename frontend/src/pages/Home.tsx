@@ -20,7 +20,7 @@ export default function Home() {
 
       <CategoryFilterSimple selected={category} onSelect={setCategory} />
 
-      <h1 className="text-3xl font-bold mb-6 text-pink-700">
+      <h1 className="text-3xl font-bold mb-6 text-yellow-600">
         {category === "all" ? "Nuestros Postres" : `Postres: ${category}`}
       </h1>
 

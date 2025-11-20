@@ -21,7 +21,7 @@ export default function CategoryFilterSimple({ selected, onSelect }: Props) {
             onClick={() => onSelect(c.id)}
             className={`px-4 py-2 rounded-xl border ${
               selected === c.id
-                ? "bg-pink-600 text-white"
+                ? "bg-yellow-500 text-white"
                 : "bg-white text-gray-700"
             }`}
           >

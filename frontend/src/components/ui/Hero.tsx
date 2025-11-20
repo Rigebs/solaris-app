@@ -27,8 +27,8 @@ export default function Hero() {
           </p>
 
           <Link
-            to="/"
-            className="inline-flex items-center gap-2 bg-pink-600 hover:bg-pink-700 px-6 py-3 rounded-xl text-white font-semibold mt-6 shadow-lg transition"
+            to="/catalogo"
+            className="inline-flex items-center gap-2 bg-yellow-500 hover:bg-yellow-600 px-6 py-3 rounded-xl text-white font-semibold mt-6 shadow-lg transition"
           >
             Ver catálogo <AiOutlineArrowRight size={20} />
           </Link>

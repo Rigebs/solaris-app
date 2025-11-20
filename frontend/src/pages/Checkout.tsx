@@ -32,22 +32,24 @@ export default function Checkout() {
   if (submitted)
     return (
       <div className="text-center py-20">
-        <h1 className="text-3xl font-bold text-pink-700">¡Pedido realizado!</h1>
+        <h1 className="text-3xl font-bold text-yellow-700">
+          ¡Pedido realizado!
+        </h1>
         <p className="mt-4 text-gray-600">Revisa tus pedidos en tu perfil.</p>
       </div>
     );
 
   return (
     <div className="max-w-6xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6 text-pink-700">Checkout</h1>
+      <h1 className="text-3xl font-bold mb-6 text-yellow-700">Checkout</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
         {/* FORM */}
         <form
           onSubmit={handleSubmit}
-          className="bg-white p-6 rounded-2xl shadow space-y-4 border border-pink-100"
+          className="bg-white p-6 rounded-2xl shadow space-y-4 border border-yellow-100"
         >
-          <h2 className="text-xl font-semibold text-pink-700">
+          <h2 className="text-xl font-semibold text-yellow-700">
             Información del cliente
           </h2>
 
@@ -55,7 +57,7 @@ export default function Checkout() {
             required
             type="text"
             placeholder="Nombre completo"
-            className="w-full border p-3 rounded-xl focus:ring-2 ring-pink-300"
+            className="w-full border p-3 rounded-xl focus:ring-2 ring-yellow-300"
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
           />
@@ -63,7 +65,7 @@ export default function Checkout() {
             required
             type="text"
             placeholder="Dirección"
-            className="w-full border p-3 rounded-xl focus:ring-2 ring-pink-300"
+            className="w-full border p-3 rounded-xl focus:ring-2 ring-yellow-300"
             value={form.address}
             onChange={(e) => setForm({ ...form, address: e.target.value })}
           />
@@ -71,22 +73,22 @@ export default function Checkout() {
             required
             type="tel"
             placeholder="Teléfono"
-            className="w-full border p-3 rounded-xl focus:ring-2 ring-pink-300"
+            className="w-full border p-3 rounded-xl focus:ring-2 ring-yellow-300"
             value={form.phone}
             onChange={(e) => setForm({ ...form, phone: e.target.value })}
           />
 
           <button
             type="submit"
-            className="bg-pink-600 text-white w-full py-3 rounded-xl hover:bg-pink-700 transition"
+            className="bg-yellow-600 text-white w-full py-3 rounded-xl hover:bg-yellow-700 transition"
           >
             Confirmar pedido
           </button>
         </form>
 
         {/* ORDER SUMMARY */}
-        <div className="bg-white p-6 rounded-2xl shadow border border-pink-100">
-          <h2 className="text-xl font-semibold mb-4 text-pink-700">
+        <div className="bg-white p-6 rounded-2xl shadow border border-yellow-100">
+          <h2 className="text-xl font-semibold mb-4 text-yellow-700">
             Resumen del pedido
           </h2>
 
@@ -102,7 +104,7 @@ export default function Checkout() {
 
                     {/* SIZE */}
                     {item.size && (
-                      <p className="text-sm text-pink-600">
+                      <p className="text-sm text-yellow-600">
                         Tamaño:{" "}
                         <span className="font-semibold">{item.size}</span>
                       </p>

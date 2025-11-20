@@ -2,11 +2,11 @@ import { AiFillInstagram, AiFillFacebook, AiOutlineMail } from "react-icons/ai";
 
 export default function Footer() {
   return (
-    <footer className="mt-20 bg-pink-50 border-t border-pink-200 py-10">
+    <footer className="mt-20 bg-yellow-50 border-t border-yellow-200 py-10">
       <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-10">
         {/* Logo */}
         <div>
-          <h2 className="text-2xl font-bold text-pink-700">Solaris</h2>
+          <h2 className="text-2xl font-bold text-yellow-700">Solaris</h2>
           <p className="mt-2 text-gray-600">
             Dulzura artesanal para tus momentos especiales.
           </p>
@@ -15,10 +15,10 @@ export default function Footer() {
         {/* Redes sociales */}
         <div>
           <h3 className="text-lg font-semibold text-gray-700">Síguenos</h3>
-          <div className="flex gap-5 text-pink-600 mt-3">
+          <div className="flex gap-5 text-yellow-600 mt-3">
             <a
               href="#"
-              className="hover:text-pink-800 transition"
+              className="hover:text-yellow-800 transition"
               aria-label="Instagram"
             >
               <AiFillInstagram size={28} />
@@ -26,7 +26,7 @@ export default function Footer() {
 
             <a
               href="#"
-              className="hover:text-pink-800 transition"
+              className="hover:text-yellow-800 transition"
               aria-label="Facebook"
             >
               <AiFillFacebook size={28} />
@@ -34,7 +34,7 @@ export default function Footer() {
 
             <a
               href="mailto:correo@ejemplo.com"
-              className="hover:text-pink-800 transition"
+              className="hover:text-yellow-800 transition"
               aria-label="Email"
             >
               <AiOutlineMail size={28} />

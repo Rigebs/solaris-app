@@ -49,7 +49,7 @@ export default function ProductDetail() {
 
       {/* Información del producto */}
       <div>
-        <h1 className="text-4xl font-bold text-pink-700">{product.name}</h1>
+        <h1 className="text-4xl font-bold text-yellow-700">{product.name}</h1>
         <p className="mt-4 text-gray-600">{product.description}</p>
 
         {/* Tamaños */}
@@ -63,8 +63,8 @@ export default function ProductDetail() {
                 onClick={() => setSelectedSize(s)}
                 className={`px-4 py-2 rounded-xl border transition ${
                   selectedSize.label === s.label
-                    ? "bg-pink-600 text-white border-pink-600"
-                    : "bg-white hover:border-pink-400"
+                    ? "bg-yellow-500 text-white border-yellow-500"
+                    : "bg-white hover:border-yellow-300"
                 }`}
               >
                 {s.label} — ${s.price}
@@ -84,8 +84,8 @@ export default function ProductDetail() {
                 onClick={() => toggleTopping(t)}
                 className={`px-4 py-2 rounded-xl border transition ${
                   selectedToppings.includes(t)
-                    ? "bg-pink-500 text-white border-pink-500"
-                    : "bg-white hover:border-pink-400"
+                    ? "bg-yellow-500 text-white border-yellow-500"
+                    : "bg-white hover:border-yellow-400"
                 }`}
               >
                 {t}
@@ -106,13 +106,13 @@ export default function ProductDetail() {
         </div>
 
         {/* Precio final */}
-        <p className="mt-6 text-3xl font-bold text-pink-700">
+        <p className="mt-6 text-3xl font-bold text-yellow-600">
           ${finalPrice.toFixed(2)}
         </p>
 
         {/* Botón agregar al carrito */}
         <button
-          className="mt-6 bg-pink-600 text-white px-6 py-3 rounded-xl hover:bg-pink-700 transition"
+          className="mt-6 bg-yellow-600 text-white px-6 py-3 rounded-xl hover:bg-yellow-700 transition"
           onClick={() => {
             addToCart({
               id: product.id,
