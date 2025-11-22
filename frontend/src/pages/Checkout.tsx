@@ -57,7 +57,7 @@ export default function Checkout() {
             required
             type="text"
             placeholder="Nombre completo"
-            className="w-full border p-3 rounded-xl focus:ring-2 ring-yellow-300"
+            className="w-full border border-gray-300 p-3 rounded-xl focus:border-yellow-400 focus:outline-none"
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
           />
@@ -65,7 +65,7 @@ export default function Checkout() {
             required
             type="text"
             placeholder="Dirección"
-            className="w-full border p-3 rounded-xl focus:ring-2 ring-yellow-300"
+            className="w-full border border-gray-300 p-3 rounded-xl focus:border-yellow-400 focus:outline-none"
             value={form.address}
             onChange={(e) => setForm({ ...form, address: e.target.value })}
           />
@@ -73,7 +73,7 @@ export default function Checkout() {
             required
             type="tel"
             placeholder="Teléfono"
-            className="w-full border p-3 rounded-xl focus:ring-2 ring-yellow-300"
+            className="w-full border border-gray-300 p-3 rounded-xl focus:border-yellow-400 focus:outline-none"
             value={form.phone}
             onChange={(e) => setForm({ ...form, phone: e.target.value })}
           />
@@ -93,13 +93,23 @@ export default function Checkout() {
           </h2>
 
           <div className="space-y-4">
-            {cart.map((item) => (
+            {cart.map((item, index) => (
               <div
-                key={`${item.id}-${item.size}-${JSON.stringify(item.toppings)}`}
+                key={`${item.id}-${item.size ?? "no-size"}-${
+                  item.toppings?.join("_") ?? "no-toppings"
+                }-${index}`}
                 className="border-b pb-4"
               >
-                <div className="flex justify-between">
-                  <div>
+                <div className="flex justify-between gap-4">
+                  {/* Imagen del producto */}
+                  <img
+                    src={item.images?.[0]}
+                    alt={item.name}
+                    className="w-20 h-20 object-cover rounded-xl border"
+                  />
+
+                  {/* Info del producto */}
+                  <div className="flex-1">
                     <p className="font-semibold">{item.name}</p>
 
                     {/* SIZE */}
@@ -132,6 +142,7 @@ export default function Checkout() {
                     </p>
                   </div>
 
+                  {/* Precio */}
                   <p className="font-semibold">
                     ${(item.finalPrice * item.quantity).toFixed(2)}
                   </p>

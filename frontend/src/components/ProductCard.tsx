@@ -21,7 +21,7 @@ export default function ProductCard({ product }: Props) {
 
       {/* Imagen principal */}
       <img
-        src={product.images[0]}
+        src={product.images?.[0] ?? "/placeholder.jpg"}
         className="rounded-xl mb-4 h-48 w-full object-cover"
         alt={product.name}
       />
@@ -31,7 +31,7 @@ export default function ProductCard({ product }: Props) {
 
       {/* Precio base */}
       <p className="text-gray-600 mt-1 font-medium">
-        Desde ${product.basePrice}
+        Desde ${product.base_price}
       </p>
 
       {/* Link */}

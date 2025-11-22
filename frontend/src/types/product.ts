@@ -1,16 +1,16 @@
-export type ProductSize = {
+export interface ProductSize {
   label: string;
   price: number;
-};
+}
 
-export type Product = {
+export interface Product {
   id: number;
   name: string;
-  basePrice: number;
-  images: string[];
-  category: string;
-  categorySlug: string;
   description: string;
+  base_price: number;
+  category_id: number;
+  category_name?: string; // opcional
   sizes: ProductSize[];
   toppings: string[];
-};
+  images: string[];
+}

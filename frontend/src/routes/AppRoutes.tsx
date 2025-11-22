@@ -30,7 +30,7 @@ export default function AppRoutes() {
         <Route path="/cuenta" element={<Account />} />
         <Route path="/pedidos" element={<Orders />} />
         <Route path="/catalogo" element={<Catalog />} />
-        <Route path="/categoria/:slug" element={<CategoryPage />} />
+        <Route path="/categoria/:id" element={<CategoryPage />} />
       </Route>
 
       {/* Rutas de autenticación — sin navbar/footer */}

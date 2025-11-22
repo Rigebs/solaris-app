@@ -1,0 +1,63 @@
+# ========================================================
+# NODE / FRONTEND
+# ========================================================
+node_modules/
+dist/
+build/
+.next/
+out/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.vite/
+*.tsbuildinfo
+
+# Env frontend
+frontend/.env
+frontend/.env.local
+frontend/.env.*.local
+
+# ========================================================
+# PYTHON / FASTAPI BACKEND
+# ========================================================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Env backend
+backend/.env
+backend/.env.local
+.env
+.env.local
+
+# Alembic / migrations cache
+backend/alembic/__pycache__/
+backend/alembic/*.pyc
+
+# VSCode
+.vscode/
+*.code-workspace
+
+# IDEs
+.idea/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Python virtual environment folders
+/.env/
+ /.venv/
+.vscode/settings.json

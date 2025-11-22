@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
@@ -7,28 +7,53 @@ import "swiper/css";
 import "swiper/css/pagination";
 import { useCart } from "../context/CartContext";
 import { useToast } from "../context/ToastContext";
-import { products } from "../mock/products";
+import type { Product } from "../types/product";
+import { getProductById } from "../services/productService";
 
 export default function ProductDetail() {
   const { id } = useParams();
   const { addToCart } = useCart();
   const { showToast } = useToast();
 
-  const product = products.find((p) => p.id === Number(id));
-  if (!product) return <p>Producto no encontrado</p>;
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const [selectedSize, setSelectedSize] = useState(product.sizes[0]);
+  const [selectedSize, setSelectedSize] = useState<any>(null);
   const [selectedToppings, setSelectedToppings] = useState<string[]>([]);
   const [notes, setNotes] = useState("");
+
+  // Fetch del producto
+  useEffect(() => {
+    if (!id) return;
+
+    setLoading(true);
+
+    getProductById(Number(id))
+      .then((data) => {
+        setProduct(data);
+
+        if (data.sizes && data.sizes.length > 0) {
+          setSelectedSize(data.sizes[0]);
+        }
+
+        setLoading(false);
+      })
+      .catch(() => {
+        setProduct(null);
+        setLoading(false);
+      });
+  }, [id]);
+
+  if (loading) return <p>Cargando...</p>;
+  if (!product) return <p>Producto no encontrado</p>;
+
+  const finalPrice = selectedSize.price;
 
   const toggleTopping = (t: string) => {
     setSelectedToppings((prev) =>
       prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t]
     );
   };
-
-  // ❗ FINAL PRICE = precio del tamaño (no dependemos de basePrice)
-  const finalPrice = selectedSize.price;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
@@ -39,9 +64,13 @@ export default function ProductDetail() {
           modules={[Pagination]}
           className="rounded-xl"
         >
-          {product.images.map((img, i) => (
+          {product.images?.map((img, i) => (
             <SwiperSlide key={i}>
-              <img src={img} className="w-full rounded-xl" />
+              <img
+                src={img}
+                className="w-full h-[400px] object-cover rounded-xl"
+                alt=""
+              />
             </SwiperSlide>
           ))}
         </Swiper>
@@ -57,12 +86,12 @@ export default function ProductDetail() {
           <h2 className="font-semibold text-lg">Tamaños / Porciones</h2>
 
           <div className="flex flex-col gap-2 mt-2">
-            {product.sizes.map((s) => (
+            {product.sizes?.map((s) => (
               <button
                 key={s.label}
                 onClick={() => setSelectedSize(s)}
-                className={`px-4 py-2 rounded-xl border transition ${
-                  selectedSize.label === s.label
+                className={`px-4 py-2 rounded-xl border transition focus:outline-none focus:ring-0 ${
+                  selectedSize?.label === s.label
                     ? "bg-yellow-500 text-white border-yellow-500"
                     : "bg-white hover:border-yellow-300"
                 }`}
@@ -78,11 +107,11 @@ export default function ProductDetail() {
           <h2 className="font-semibold text-lg">Toppings opcionales</h2>
 
           <div className="flex flex-wrap gap-3 mt-2">
-            {product.toppings.map((t) => (
+            {product.toppings?.map((t) => (
               <button
                 key={t}
                 onClick={() => toggleTopping(t)}
-                className={`px-4 py-2 rounded-xl border transition ${
+                className={`px-4 py-2 rounded-xl border transition focus:outline-none focus:ring-0 ${
                   selectedToppings.includes(t)
                     ? "bg-yellow-500 text-white border-yellow-500"
                     : "bg-white hover:border-yellow-400"
@@ -99,7 +128,7 @@ export default function ProductDetail() {
           <h2 className="font-semibold text-lg">Notas (opcional)</h2>
           <textarea
             placeholder="Ej: sin azúcar, agregar fresas extra..."
-            className="w-full border p-3 rounded-xl mt-2"
+            className="w-full border p-3 rounded-xl mt-2 focus:outline-none focus:ring-0"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
           />
@@ -112,21 +141,17 @@ export default function ProductDetail() {
 
         {/* Botón agregar al carrito */}
         <button
-          className="mt-6 bg-yellow-600 text-white px-6 py-3 rounded-xl hover:bg-yellow-700 transition"
+          className="mt-6 bg-yellow-600 text-white px-6 py-3 rounded-xl hover:bg-yellow-700 transition focus:outline-none focus:ring-0"
           onClick={() => {
             addToCart({
               id: product.id,
               name: product.name,
               images: product.images,
-
-              // Datos que el checkout SI puede leer
               size: selectedSize.label,
               toppings: selectedToppings,
               notes,
-
-              price: product.basePrice, // precio base (si lo necesitas)
-              finalPrice, // este es el que se cobra realmente
-
+              price: product.base_price,
+              finalPrice,
               quantity: 1,
             });
 

@@ -1,34 +1,41 @@
 // /src/components/CategoryFilterSimple.tsx
 type Props = {
   selected: string;
-  onSelect: (value: string) => void;
+  onSelect: (slug: string) => void;
+  categories: { id: number; name: string; slug: string }[];
 };
 
-export default function CategoryFilterSimple({ selected, onSelect }: Props) {
-  const categories = [
-    { id: "all", name: "Todos" },
-    { id: "tortas", name: "Tortas" },
-    { id: "cheesecake", name: "Cheesecakes" },
-    { id: "brownies", name: "Brownies" },
-  ];
-
+export default function CategoryFilterSimple({
+  selected,
+  onSelect,
+  categories,
+}: Props) {
   return (
-    <div className="overflow-x-auto">
-      <div className="flex gap-3 my-2 whitespace-nowrap">
-        {categories.map((c) => (
-          <button
-            key={c.id}
-            onClick={() => onSelect(c.id)}
-            className={`px-4 py-2 rounded-xl border ${
-              selected === c.id
-                ? "bg-yellow-500 text-white"
-                : "bg-white text-gray-700"
-            }`}
-          >
-            {c.name}
-          </button>
-        ))}
-      </div>
+    <div className="flex gap-3 mb-6 overflow-x-auto pb-2">
+      <button
+        onClick={() => onSelect("all")}
+        className={`px-4 py-2 rounded-full border ${
+          selected === "all"
+            ? "bg-yellow-500 text-white"
+            : "bg-white text-yellow-700 border-yellow-400"
+        }`}
+      >
+        Todas
+      </button>
+
+      {categories.map((cat) => (
+        <button
+          key={cat.id}
+          onClick={() => onSelect(String(cat.id))}
+          className={`px-4 py-2 rounded-full border ${
+            selected === String(cat.id)
+              ? "bg-yellow-500 text-white"
+              : "bg-white text-yellow-700 border-yellow-400"
+          }`}
+        >
+          {cat.name}
+        </button>
+      ))}
     </div>
   );
 }
