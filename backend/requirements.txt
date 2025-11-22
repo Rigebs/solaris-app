@@ -1,0 +1,12 @@
+fastapi
+uvicorn[standard]
+SQLAlchemy==1.4.*
+alembic
+python-multipart
+pydantic
+python-jose[cryptography]
+passlib[bcrypt]
+mysqlclient               # o mysql-connector-python si prefieres
+databases                 # opcional (no necesario con SQLAlchemy)
+python-dotenv
+python-decouple           # opcional para config
