@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://reposteria-solaris.vercel.app/sitemap.xml
