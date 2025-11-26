@@ -7,8 +7,6 @@ from app.core.config import settings
 from app.db.session import get_db
 from app import crud
 
-
-# 🔥 ESTE FALTABA
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/token")
 
 
@@ -16,9 +14,11 @@ def get_current_user(
     db: Session = Depends(get_db),
     token: str = Depends(oauth2_scheme)
 ):
+    """Obtiene el usuario actual basado en el JWT."""
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials"
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
     )
 
     try:
@@ -27,9 +27,10 @@ def get_current_user(
             settings.secret_key,
             algorithms=[settings.algorithm]
         )
-        user_id: str = payload.get("sub")
-        if user_id is None:
+        user_id = payload.get("sub")
+        if not user_id:
             raise credentials_exception
+
     except JWTError:
         raise credentials_exception
 

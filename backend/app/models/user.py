@@ -11,3 +11,5 @@ class User(Base):
     is_active = Column(Boolean, default=True)
     is_superuser = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.utcnow)
+    address = Column(String(255))
+    phone = Column(String(50))

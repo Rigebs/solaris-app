@@ -1,16 +1,15 @@
 import { createContext, useContext, useEffect, useState } from "react";
-
-type User = {
-  id: string;
-  name: string;
-  email: string;
-};
+import type { User } from "../types/user";
+import { api } from "../lib/axios";
 
 type AuthCtx = {
   user: User | null;
   login: (email: string, password: string) => Promise<boolean>;
   register: (name: string, email: string, password: string) => Promise<boolean>;
+  loginWithGoogle: (id_token: string) => Promise<boolean>;
   logout: () => void;
+  redirectAfterLogin: string | null;
+  setRedirectAfterLogin: (path: string | null) => void;
 };
 
 const AuthContext = createContext<AuthCtx | undefined>(undefined);
@@ -21,43 +20,119 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return saved ? JSON.parse(saved) : null;
   });
 
+  const [redirectAfterLogin, setRedirectAfterLogin] = useState<string | null>(
+    () => localStorage.getItem("redirect_after_login")
+  );
+
+  // guarda usuario en localStorage
   useEffect(() => {
     localStorage.setItem("auth_user", JSON.stringify(user));
   }, [user]);
 
-  // mock storage for credentials (ONLY for demo)
-  const getUsers = () => {
-    const raw = localStorage.getItem("mock_users");
-    return raw ? JSON.parse(raw) : [];
-  };
-  const saveUsers = (arr: any[]) =>
-    localStorage.setItem("mock_users", JSON.stringify(arr));
-
-  const login = async (email: string, password: string) => {
-    const users = getUsers();
-    const found = users.find(
-      (u: any) => u.email === email && u.password === password
-    );
-    if (found) {
-      setUser({ id: found.id, name: found.name, email: found.email });
-      return true;
+  // guarda redirect path en localStorage
+  useEffect(() => {
+    if (redirectAfterLogin) {
+      localStorage.setItem("redirect_after_login", redirectAfterLogin);
+    } else {
+      localStorage.removeItem("redirect_after_login");
     }
-    return false;
+  }, [redirectAfterLogin]);
+
+  // ************* LOGIN NORMAL *************
+  const login = async (email: string, password: string) => {
+    try {
+      const res = await api.post(
+        "/auth/token",
+        new URLSearchParams({
+          username: email,
+          password: password,
+        }),
+        {
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        }
+      );
+
+      const { access_token, refresh_token } = res.data;
+      localStorage.setItem("token", access_token);
+      localStorage.setItem("refresh_token", refresh_token);
+
+      // cargar usuario desde backend
+      const me = await api.get("/users/me", {
+        headers: { Authorization: `Bearer ${access_token}` },
+      });
+      console.log(me);
+
+      setUser(me.data);
+
+      return true;
+    } catch (error) {
+      console.error("Login error:", error);
+      return false;
+    }
   };
 
+  // ************* REGISTRO REAL *************
   const register = async (name: string, email: string, password: string) => {
-    const users = getUsers();
-    if (users.find((u: any) => u.email === email)) return false;
-    const newUser = { id: Date.now().toString(), name, email, password };
-    saveUsers([...users, newUser]);
-    setUser({ id: newUser.id, name: newUser.name, email: newUser.email });
-    return true;
+    try {
+      const res = await api.post("/auth/register", {
+        name,
+        email,
+        password,
+      });
+
+      const { access_token, refresh_token } = res.data;
+      localStorage.setItem("token", access_token);
+      localStorage.setItem("refresh_token", refresh_token);
+
+      setUser(res.data.user);
+      return true;
+    } catch (error) {
+      console.error("Register error:", error);
+      return false;
+    }
   };
 
-  const logout = () => setUser(null);
+  // ************* LOGIN CON GOOGLE *************
+  const loginWithGoogle = async (id_token: string) => {
+    try {
+      // 1️⃣ Enviar el token de Google al backend
+      const res = await api.post("/auth/google", { id_token });
+
+      // 2️⃣ Guardar access token y refresh token devueltos por backend
+      const { access_token, refresh_token } = res.data;
+      localStorage.setItem("token", access_token);
+      localStorage.setItem("refresh_token", refresh_token);
+
+      // 3️⃣ Llamar a /users/me para obtener el usuario
+      const me = await api.get("/users/me"); // Axios ya tiene interceptor con token
+      setUser(me.data);
+
+      return true;
+    } catch (error) {
+      console.error("Google login error:", error);
+      return false;
+    }
+  };
+
+  // ************* LOGOUT *************
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem("token");
+    localStorage.removeItem("refresh_token");
+  };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        login,
+        register,
+        loginWithGoogle,
+        logout,
+        redirectAfterLogin,
+        setRedirectAfterLogin,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

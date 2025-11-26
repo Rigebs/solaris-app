@@ -1,18 +1,10 @@
 import { createContext, useContext, useEffect, useState } from "react";
-
-type Order = {
-  id: string;
-  userId: string;
-  items: any[];
-  total: number;
-  createdAt: string;
-  status: "pending" | "completed" | "cancelled";
-};
+import type { Order, OrderItem } from "../types/order";
 
 type OrdersCtx = {
   orders: Order[];
-  createOrder: (userId: string, items: any[], total: number) => Order;
-  getUserOrders: (userId: string) => Order[];
+  createOrder: (userId: number, items: OrderItem[], total: number) => Order;
+  getUserOrders: (userId: number) => Order[];
 };
 
 const OrdersContext = createContext<OrdersCtx | undefined>(undefined);
@@ -27,21 +19,21 @@ export const OrdersProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.setItem("mock_orders", JSON.stringify(orders));
   }, [orders]);
 
-  const createOrder = (userId: string, items: any[], total: number) => {
+  const createOrder = (userId: number, items: OrderItem[], total: number) => {
     const newOrder: Order = {
-      id: Date.now().toString(),
-      userId,
+      id: Date.now(),
+      user_id: userId,
       items,
       total,
-      createdAt: new Date().toISOString(),
+      created_at: new Date().toISOString(),
       status: "pending",
     };
     setOrders((s) => [newOrder, ...s]);
     return newOrder;
   };
 
-  const getUserOrders = (userId: string) =>
-    orders.filter((o) => o.userId === userId);
+  const getUserOrders = (userId: number) =>
+    orders.filter((o) => o.user_id === userId);
 
   return (
     <OrdersContext.Provider value={{ orders, createOrder, getUserOrders }}>

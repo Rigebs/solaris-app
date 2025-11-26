@@ -1,32 +1,82 @@
-import { useCart } from "../context/CartContext";
-import { useState } from "react";
-import { useAuth } from "../context/AuthContext";
-import { useOrders } from "../context/OrdersContext";
+import { useEffect, useState } from "react";
+import { useCreateOrder } from "../hooks/useCreateOrder";
 import { useNavigate } from "react-router-dom";
+import type { OrderRequest } from "../types/order";
+import { useAuth } from "../context/AuthContext";
+import { useCart } from "../context/CartContext";
+import { useUsers } from "../hooks/useUsers";
+import { formatCurrency } from "../utils/currency";
 
 export default function Checkout() {
   const { cart, clearCart } = useCart();
-  const { user } = useAuth();
-  const { createOrder } = useOrders();
+  const { user, setRedirectAfterLogin } = useAuth();
+  const { createOrder, loading } = useCreateOrder();
+  const { updateUser } = useUsers();
+
   const nav = useNavigate();
 
   const [submitted, setSubmitted] = useState(false);
-  const [form, setForm] = useState({ name: "", address: "", phone: "" });
+  const [form, setForm] = useState({
+    name: "",
+    address: "",
+    phone: "",
+  });
+
+  useEffect(() => {
+    if (user) {
+      setForm({
+        name: user.name ?? "",
+        address: user.address ?? "",
+        phone: user.phone ?? "",
+      });
+      console.log(user);
+    }
+  }, [user]);
 
   const total = cart.reduce(
     (acc, item) => acc + item.finalPrice * item.quantity,
     0
   );
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return nav("/login");
+    if (!user) {
+      // Guardar la URL actual para volver después del login
+      setRedirectAfterLogin("/checkout");
+      return nav("/login");
+    }
 
-    createOrder(user.id, cart, total);
-    console.log(cart);
+    if (
+      form.name !== user.name ||
+      form.address !== user.address ||
+      form.phone !== user.phone
+    ) {
+      await updateUser({
+        name: form.name,
+        address: form.address,
+        phone: form.phone,
+      });
+    }
 
-    clearCart();
-    setSubmitted(true);
+    const payload: OrderRequest = {
+      total,
+      items: cart.map((item) => ({
+        product_id: item.id,
+        name: item.name,
+        size: item.size,
+        toppings: item.toppings ?? [],
+        notes: item.notes ?? "",
+        unit_price: item.finalPrice,
+        quantity: item.quantity,
+      })),
+    };
+
+    const result = await createOrder(payload);
+
+    if (result) {
+      clearCart();
+      setSubmitted(true);
+    }
   };
 
   if (submitted)
@@ -44,7 +94,6 @@ export default function Checkout() {
       <h1 className="text-3xl font-bold mb-6 text-yellow-700">Checkout</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-        {/* FORM */}
         <form
           onSubmit={handleSubmit}
           className="bg-white p-6 rounded-2xl shadow space-y-4 border border-yellow-100"
@@ -57,36 +106,39 @@ export default function Checkout() {
             required
             type="text"
             placeholder="Nombre completo"
-            className="w-full border border-gray-300 p-3 rounded-xl focus:border-yellow-400 focus:outline-none"
+            className="w-full border border-gray-300 p-3 rounded-xl"
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
           />
+
           <input
             required
             type="text"
             placeholder="Dirección"
-            className="w-full border border-gray-300 p-3 rounded-xl focus:border-yellow-400 focus:outline-none"
+            className="w-full border border-gray-300 p-3 rounded-xl"
             value={form.address}
             onChange={(e) => setForm({ ...form, address: e.target.value })}
           />
+
           <input
             required
             type="tel"
             placeholder="Teléfono"
-            className="w-full border border-gray-300 p-3 rounded-xl focus:border-yellow-400 focus:outline-none"
+            className="w-full border border-gray-300 p-3 rounded-xl"
             value={form.phone}
             onChange={(e) => setForm({ ...form, phone: e.target.value })}
           />
 
           <button
             type="submit"
-            className="bg-yellow-600 text-white w-full py-3 rounded-xl hover:bg-yellow-700 transition"
+            disabled={loading}
+            className="bg-yellow-600 text-white w-full py-3 rounded-xl hover:bg-yellow-700 transition disabled:opacity-50"
           >
-            Confirmar pedido
+            {loading ? "Procesando…" : "Confirmar pedido"}
           </button>
         </form>
 
-        {/* ORDER SUMMARY */}
+        {/* RESUMEN DEL PEDIDO */}
         <div className="bg-white p-6 rounded-2xl shadow border border-yellow-100">
           <h2 className="text-xl font-semibold mb-4 text-yellow-700">
             Resumen del pedido
@@ -94,57 +146,39 @@ export default function Checkout() {
 
           <div className="space-y-4">
             {cart.map((item, index) => (
-              <div
-                key={`${item.id}-${item.size ?? "no-size"}-${
-                  item.toppings?.join("_") ?? "no-toppings"
-                }-${index}`}
-                className="border-b pb-4"
-              >
+              <div key={`${item.id}-${index}`} className="border-b pb-4">
                 <div className="flex justify-between gap-4">
-                  {/* Imagen del producto */}
                   <img
                     src={item.images?.[0]}
                     alt={item.name}
                     className="w-20 h-20 object-cover rounded-xl border"
                   />
 
-                  {/* Info del producto */}
                   <div className="flex-1">
                     <p className="font-semibold">{item.name}</p>
-
-                    {/* SIZE */}
                     {item.size && (
                       <p className="text-sm text-yellow-600">
                         Tamaño:{" "}
                         <span className="font-semibold">{item.size}</span>
                       </p>
                     )}
-
-                    {/* TOPPINGS */}
-                    {item.toppings && item.toppings.length > 0 && (
+                    {item.toppings?.length > 0 && (
                       <p className="text-sm text-gray-700">
-                        Toppings:{" "}
-                        <span className="font-medium">
-                          {item.toppings.join(", ")}
-                        </span>
+                        Toppings: {item.toppings.join(", ")}
                       </p>
                     )}
-
-                    {/* NOTES */}
                     {item.notes && (
                       <p className="text-sm italic text-gray-600">
                         Nota: {item.notes}
                       </p>
                     )}
-
                     <p className="text-sm text-gray-500">
                       Cantidad: {item.quantity}
                     </p>
                   </div>
 
-                  {/* Precio */}
                   <p className="font-semibold">
-                    ${(item.finalPrice * item.quantity).toFixed(2)}
+                    {formatCurrency(item.finalPrice * item.quantity)}
                   </p>
                 </div>
               </div>
@@ -152,7 +186,7 @@ export default function Checkout() {
           </div>
 
           <div className="pt-4 text-right">
-            <p className="text-lg font-bold">Total: ${total.toFixed(2)}</p>
+            <p className="text-lg font-bold">Total: {formatCurrency(total)}</p>
           </div>
         </div>
       </div>

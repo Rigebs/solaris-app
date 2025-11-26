@@ -14,6 +14,7 @@ import MainLayout from "../layouts/MainLayout";
 import Orders from "../pages/Orders";
 import Catalog from "../pages/Catalog";
 import CategoryPage from "../pages/CategoryPage";
+import { PrivateRoute, PublicRoute } from "./ProtectedRoute";
 
 export default function AppRoutes() {
   return (
@@ -27,17 +28,47 @@ export default function AppRoutes() {
         <Route path="/sobre-nosotros" element={<About />} />
         <Route path="/favoritos" element={<Wishlist />} />
         <Route path="/checkout" element={<Checkout />} />
-        <Route path="/cuenta" element={<Account />} />
         <Route path="/pedidos" element={<Orders />} />
         <Route path="/catalogo" element={<Catalog />} />
         <Route path="/categoria/:id" element={<CategoryPage />} />
+
+        {/* Rutas protegidas - requieren autenticación */}
+        <Route
+          path="/cuenta"
+          element={
+            <PrivateRoute>
+              <Account />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/checkout"
+          element={
+            <PrivateRoute>
+              <Checkout />
+            </PrivateRoute>
+          }
+        />
       </Route>
 
-      {/* Rutas de autenticación — sin navbar/footer */}
-
+      {/* Rutas de autenticación — solo accesibles si NO estás logueado */}
       <Route element={<AuthLayout />}>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route
+          path="/login"
+          element={
+            <PublicRoute>
+              <Login />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            <PublicRoute>
+              <Register />
+            </PublicRoute>
+          }
+        />
       </Route>
     </Routes>
   );

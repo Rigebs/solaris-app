@@ -7,5 +7,6 @@ class CategoryBase(BaseModel):
 class Category(CategoryBase):
     id: int
 
-    class Config:
-        from_attributes = True
+    model_config = {
+        "from_attributes": True
+    }

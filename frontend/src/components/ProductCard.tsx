@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import WishlistButton from "./WishlistButton";
 import type { Product } from "../types/product";
+import { formatCurrency } from "../utils/currency";
 
 type Props = {
   product: Product;
@@ -31,7 +32,7 @@ export default function ProductCard({ product }: Props) {
 
       {/* Precio base */}
       <p className="text-gray-600 mt-1 font-medium">
-        Desde ${product.base_price}
+        Desde {formatCurrency(product.base_price)}
       </p>
 
       {/* Link */}

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import GoogleLoginButton from "../components/auth/GoogleLoginButton";
 
 export default function Register() {
   const { register } = useAuth();
@@ -50,6 +51,7 @@ export default function Register() {
           Registrarme
         </button>
       </form>
+      <GoogleLoginButton />
     </div>
   );
 }

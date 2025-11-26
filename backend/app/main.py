@@ -2,8 +2,14 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
-from app.api.routes import auth, orders, products, categories
+from app.core.logging_config import setup_logging
+from app.api.routes import auth, orders, products, categories, users
 from app.db.base import Base, engine
+import logging
+
+# Configurar logging
+setup_logging()
+logger = logging.getLogger(__name__)
 
 def get_application() -> FastAPI:
     app = FastAPI(
@@ -14,16 +20,17 @@ def get_application() -> FastAPI:
 
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],
+        allow_origins=settings.allowed_origins,
         allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
+        allow_methods=["GET", "POST", "PUT", "DELETE"],
+        allow_headers=["Content-Type", "Authorization"],
     )
 
     app.include_router(auth.router, prefix="/api")
     app.include_router(products.router, prefix="/api")
     app.include_router(categories.router, prefix="/api")
     app.include_router(orders.router, prefix="/api")
+    app.include_router(users.router, prefix="/api")
 
     # Healthcheck
     @app.get("/health")
@@ -32,6 +39,7 @@ def get_application() -> FastAPI:
 
     # Crear tablas si no existen
     Base.metadata.create_all(bind=engine)
+    logger.info(f"Aplicación iniciada: {settings.app_name}")
 
     return app
 

@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import GoogleLoginButton from "../components/auth/GoogleLoginButton";
 
 export default function Login() {
-  const { login } = useAuth();
+  const { login, redirectAfterLogin, setRedirectAfterLogin } = useAuth();
   const nav = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -13,7 +14,12 @@ export default function Login() {
     e.preventDefault();
     const ok = await login(email, password);
     if (!ok) setError("Credenciales inválidas");
-    else nav("/cuenta");
+    else {
+      // Redirigir a la página guardada o a cuenta por defecto
+      const targetPath = redirectAfterLogin || "/cuenta";
+      setRedirectAfterLogin(null);
+      nav(targetPath);
+    }
   };
 
   return (
@@ -47,6 +53,7 @@ export default function Login() {
           </Link>
         </div>
       </form>
+      <GoogleLoginButton />
     </div>
   );
 }

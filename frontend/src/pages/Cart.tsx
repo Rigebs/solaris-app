@@ -1,6 +1,7 @@
 import { useCart } from "../context/CartContext";
 import { Link } from "react-router-dom";
 import { AiOutlineDelete } from "react-icons/ai";
+import { formatCurrency } from "../utils/currency";
 
 export default function Cart() {
   const { cart, removeFromCart, clearCart } = useCart();
@@ -70,7 +71,7 @@ export default function Cart() {
                     </p>
 
                     <p className="text-yellow-600 font-semibold">
-                      ${(item.finalPrice * item.quantity).toFixed(2)}
+                      {formatCurrency(item.finalPrice * item.quantity)}
                     </p>
                   </div>
                 </div>
@@ -91,7 +92,7 @@ export default function Cart() {
         <div className="pb-4 border-b border-gray-100">
           <p className="text-gray-700 text-base">Subtotal</p>
           <p className="text-xl font-bold text-yellow-600 mt-1">
-            ${total.toFixed(2)}
+            {formatCurrency(total)}
           </p>
         </div>
 

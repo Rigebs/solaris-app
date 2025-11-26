@@ -27,13 +27,47 @@ export default function Navbar() {
   const hideBackOn = ["/", "/catalogo", "/contacto", "/sobre-nosotros"];
   const showBackButton = !hideBackOn.includes(location.pathname);
 
+  const handleBack = () => {
+    // Si estamos en el flujo de checkout, llevar al carrito
+    if (location.pathname.startsWith("/checkout")) {
+      return navigate("/carrito", { replace: true });
+    }
+
+    // Si estamos en /pedidos o viendo un pedido, ir a /cuenta
+    if (
+      location.pathname.startsWith("/pedido") ||
+      location.pathname.startsWith("/pedidos")
+    ) {
+      return navigate("/cuenta", { replace: true });
+    }
+
+    // Si estamos en /cuenta, favoritos o carrito, ir a home
+    // (no usar historial para evitar ciclos)
+    if (
+      location.pathname === "/cuenta" ||
+      location.pathname === "/favoritos" ||
+      location.pathname === "/carrito"
+    ) {
+      return navigate("/", { replace: true });
+    }
+
+    // Si estamos en detalle de producto, usar historial (-1)
+    // Esto lleva a donde vino (home, catalogo, busqueda, etc)
+    if (location.pathname.startsWith("/producto")) {
+      return navigate(-1);
+    }
+
+    // Por defecto, ir a home
+    navigate("/", { replace: true });
+  };
+
   return (
     <nav className="w-full bg-white shadow-sm fixed top-0 left-0 z-50">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         {/* BACK BUTTON */}
         {showBackButton && (
           <button
-            onClick={() => navigate(-1)}
+            onClick={handleBack}
             className="text-gray-700 hover:text-yellow-600 flex items-center transition"
           >
             <AiOutlineArrowLeft size={24} />

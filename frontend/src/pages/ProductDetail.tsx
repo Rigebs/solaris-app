@@ -9,6 +9,7 @@ import { useCart } from "../context/CartContext";
 import { useToast } from "../context/ToastContext";
 import type { Product } from "../types/product";
 import { getProductById } from "../services/productService";
+import { formatCurrency } from "../utils/currency";
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -96,7 +97,7 @@ export default function ProductDetail() {
                     : "bg-white hover:border-yellow-300"
                 }`}
               >
-                {s.label} — ${s.price}
+                {s.label} — {formatCurrency(s.price)}
               </button>
             ))}
           </div>
@@ -136,7 +137,7 @@ export default function ProductDetail() {
 
         {/* Precio final */}
         <p className="mt-6 text-3xl font-bold text-yellow-600">
-          ${finalPrice.toFixed(2)}
+          {formatCurrency(finalPrice)}
         </p>
 
         {/* Botón agregar al carrito */}
@@ -155,7 +156,13 @@ export default function ProductDetail() {
               quantity: 1,
             });
 
-            showToast("Producto agregado al carrito");
+            showToast(
+              "¡Producto agregado!",
+              "success",
+              3500,
+              product.name,
+              product.images?.[0]
+            );
           }}
         >
           Agregar al carrito

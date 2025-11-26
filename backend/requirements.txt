@@ -4,9 +4,12 @@ SQLAlchemy==1.4.*
 alembic
 python-multipart
 pydantic
+pydantic-settings
 python-jose[cryptography]
 passlib[bcrypt]
-mysqlclient               # o mysql-connector-python si prefieres
-databases                 # opcional (no necesario con SQLAlchemy)
+mysqlclient
 python-dotenv
-python-decouple           # opcional para config
+google-auth==2.34.0
+email-validator
+
+

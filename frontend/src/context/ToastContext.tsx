@@ -1,30 +1,55 @@
 import { createContext, useContext, useState } from "react";
 
-type ToastType = {
+export type ToastTypeVariant = "info" | "success" | "error" | "warning";
+
+type Toast = {
+  id: string;
   message: string;
-  show: boolean;
+  type: ToastTypeVariant;
+  productName?: string;
+  productImage?: string;
 };
 
 type ToastContextType = {
-  toast: ToastType;
-  showToast: (message: string) => void;
+  toasts: Toast[];
+  showToast: (
+    message: string,
+    type?: ToastTypeVariant,
+    duration?: number,
+    productName?: string,
+    productImage?: string
+  ) => void;
+  removeToast: (id: string) => void;
 };
 
 const ToastContext = createContext<ToastContextType | null>(null);
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
-  const [toast, setToast] = useState<ToastType>({ message: "", show: false });
+  const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const showToast = (message: string) => {
-    setToast({ message, show: true });
+  const showToast = (
+    message: string,
+    type: ToastTypeVariant = "info",
+    duration: number = 3000,
+    productName?: string,
+    productImage?: string
+  ) => {
+    const id = Math.random().toString(36).substr(2, 9);
+    const toast: Toast = { id, message, type, productName, productImage };
+
+    setToasts((prev) => [...prev, toast]);
 
     setTimeout(() => {
-      setToast({ message: "", show: false });
-    }, 2500);
+      removeToast(id);
+    }, duration);
+  };
+
+  const removeToast = (id: string) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
   };
 
   return (
-    <ToastContext.Provider value={{ toast, showToast }}>
+    <ToastContext.Provider value={{ toasts, showToast, removeToast }}>
       {children}
     </ToastContext.Provider>
   );
