@@ -11,3 +11,4 @@ pymysql
 python-dotenv
 google-auth==2.34.0
 email-validator
+requests
