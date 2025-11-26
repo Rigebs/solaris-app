@@ -2,11 +2,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
-from app.core.logging_config import setup_logging
 from app.api.routes import auth, orders, products, categories, users
 import logging
 
-setup_logging()
 logger = logging.getLogger(__name__)
 
 def get_application() -> FastAPI:
