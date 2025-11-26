@@ -1,18 +1,17 @@
+# app/db/session.py
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy.orm import sessionmaker
 from app.core.config import settings
-from typing import Generator
 
-# ✅ Cambiado a PyMySQL para compatibilidad con Vercel
 DATABASE_URL = (
-    f"mysql+pymysql://{settings.db_user}:{settings.db_password}"
-    f"@{settings.db_host}:{settings.db_port}/{settings.db_name}"
-    f"?charset=utf8mb4"
+    f"mysql+pymysql://{settings.db_user}:{settings.db_password}@"
+    f"{settings.db_host}:{settings.db_port}/{settings.db_name}"
+    "?charset=utf8mb4"
 )
 
 engine = create_engine(
     DATABASE_URL,
-    pool_pre_ping=True
+    pool_pre_ping=True,
 )
 
 SessionLocal = sessionmaker(
@@ -21,9 +20,7 @@ SessionLocal = sessionmaker(
     bind=engine
 )
 
-Base = declarative_base()
-
-def get_db() -> Generator:
+def get_db():
     db = SessionLocal()
     try:
         yield db
