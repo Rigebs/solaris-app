@@ -14,12 +14,12 @@ def get_application() -> FastAPI:
         description="API para la pastelería 🎂",
     )
 
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=["*"],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
+    app.add_middleware(  
+        CORSMiddleware,  
+        allow_origins=settings.allowed_origins,
+        allow_credentials=True,  
+        allow_methods=["*"],  
+        allow_headers=["*"],  
     )
 
 
