@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, Text, ForeignKey
+from sqlalchemy import Column, Integer, String, Float, Text, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 from app.db.base import Base
 
@@ -15,3 +15,4 @@ class Product(Base):
     toppings_json = Column(String(1000), nullable=True)
 
     images_json = Column(Text, nullable=True)
+    is_active = Column(Boolean, default=True)

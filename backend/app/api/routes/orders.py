@@ -1,9 +1,8 @@
-from http.client import HTTPException
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
-from app.api.deps import get_current_user
+from app.api.deps import get_current_user, get_current_active_superuser
 from app import crud
 from app.schemas.order import OrderCreate, OrderRead
 from typing import List
@@ -26,6 +25,15 @@ def get_my_orders(
     current_user=Depends(get_current_user),
 ):
     return crud.order.get_by_user(db, user_id=current_user.id)
+
+
+@router.get("/all", response_model=List[OrderRead])
+def get_all_orders(
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_active_superuser),
+):
+    """Admin endpoint to get all orders"""
+    return crud.order.get_all(db)
 
 
 @router.get("/{order_id}", response_model=OrderRead)

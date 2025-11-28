@@ -58,6 +58,23 @@ class CRUDOrder:
         return orders
 
     def get_all(self, db: Session):
-        return db.query(Order).all()
+        """Get all orders (admin only)"""
+        orders = (
+            db.query(Order)
+            .options(
+                selectinload(Order.items).selectinload(OrderItem.product)
+            )
+            .order_by(Order.created_at.desc())
+            .all()
+        )
+        
+        for order in orders:
+            for item in order.items:
+                if item.product:
+                    item.product.images = json.loads(item.product.images_json or "[]")
+                    item.product.sizes = json.loads(item.product.sizes_json or "[]")
+                    item.product.toppings = json.loads(item.product.toppings_json or "[]")
+
+        return orders
 
 order = CRUDOrder()

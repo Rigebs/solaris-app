@@ -21,6 +21,7 @@ class User(BaseModel):
     name: Optional[str]
     address: Optional[str]
     phone: Optional[str]
+    is_superuser: bool = False
 
     model_config = {
         "from_attributes": True

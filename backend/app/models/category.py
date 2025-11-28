@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Boolean
 from app.db.base import Base
 
 class Category(Base):
@@ -6,3 +6,4 @@ class Category(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(150), nullable=False)
     slug = Column(String(150), unique=True, nullable=False)
+    is_active = Column(Boolean, default=True)
