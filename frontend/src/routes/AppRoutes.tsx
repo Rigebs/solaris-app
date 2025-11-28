@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Home from "../pages/Home";
 import ProductDetail from "../pages/ProductDetail";
 import Cart from "../pages/Cart";
@@ -15,6 +15,13 @@ import Orders from "../pages/Orders";
 import Catalog from "../pages/Catalog";
 import CategoryPage from "../pages/CategoryPage";
 import { PrivateRoute, PublicRoute } from "./ProtectedRoute";
+import AdminLayout from "../layouts/AdminLayout";
+import AdminDashboard from "../pages/admin/Dashboard";
+import ProductList from "../pages/admin/ProductList";
+import ProductForm from "../pages/admin/ProductForm";
+import CategoryList from "../pages/admin/CategoryList";
+import CategoryForm from "../pages/admin/CategoryForm";
+import OrderList from "../pages/admin/OrderList";
 
 export default function AppRoutes() {
   return (
@@ -41,26 +48,11 @@ export default function AppRoutes() {
             </PrivateRoute>
           }
         />
-        <Route
-          path="/checkout"
-          element={
-            <PrivateRoute>
-              <Checkout />
-            </PrivateRoute>
-          }
-        />
       </Route>
 
       {/* Rutas de autenticación — solo accesibles si NO estás logueado */}
       <Route element={<AuthLayout />}>
-        <Route
-          path="/login"
-          element={
-            <PublicRoute>
-              <Login />
-            </PublicRoute>
-          }
-        />
+        <Route path="/login" element={<Login />} />
         <Route
           path="/register"
           element={
@@ -69,6 +61,19 @@ export default function AppRoutes() {
             </PublicRoute>
           }
         />
+      </Route>
+
+      {/* Rutas de Administración */}
+      <Route path="/admin" element={<AdminLayout />}>
+        <Route index element={<Navigate to="/admin/dashboard" replace />} />
+        <Route path="dashboard" element={<AdminDashboard />} />
+        <Route path="products" element={<ProductList />} />
+        <Route path="products/new" element={<ProductForm />} />
+        <Route path="products/edit/:id" element={<ProductForm />} />
+        <Route path="categories" element={<CategoryList />} />
+        <Route path="categories/new" element={<CategoryForm />} />
+        <Route path="categories/edit/:id" element={<CategoryForm />} />
+        <Route path="orders" element={<OrderList />} />
       </Route>
     </Routes>
   );

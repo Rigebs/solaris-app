@@ -61,6 +61,8 @@ api.interceptors.response.use(
       try {
         const refreshToken = localStorage.getItem("refresh_token");
         if (!refreshToken) {
+          // Si no hay refresh token, el usuario nunca tuvo sesión
+          // No disparar callback de "sesión expirada"
           throw new Error("No refresh token");
         }
 
@@ -83,8 +85,10 @@ api.interceptors.response.use(
         localStorage.removeItem("refresh_token");
         localStorage.removeItem("auth_user");
 
-        // Llamar al callback para mostrar toast elegante
-        if (onSessionExpired) {
+        // Solo disparar callback si había refresh token (sesión expirada)
+        // Si no había refresh token, es que el usuario nunca tuvo sesión
+        const hadRefreshToken = localStorage.getItem("refresh_token") !== null;
+        if (onSessionExpired && hadRefreshToken) {
           onSessionExpired();
         }
 

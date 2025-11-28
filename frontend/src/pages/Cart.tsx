@@ -108,7 +108,7 @@ export default function Cart() {
           <Link
             to="/checkout"
             className="w-full sm:w-auto px-6 py-3 rounded-lg bg-yellow-600 text-white font-medium 
-                 hover:bg-yellow-700 transition shadow-sm"
+                 hover:bg-yellow-700 transition shadow-sm text-center"
           >
             Proceder al pago
           </Link>

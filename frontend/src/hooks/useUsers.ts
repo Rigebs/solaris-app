@@ -35,9 +35,11 @@ export const useUsers = () => {
     }
   }, []);
 
+  // Solo cargar usuario una sola vez al montar
   useEffect(() => {
     fetchUser();
-  }, [fetchUser]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return { user, loading, error, fetchUser, updateUser };
 };

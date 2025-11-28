@@ -24,7 +24,9 @@ export default function Login() {
 
   return (
     <div className="max-w-md mx-auto">
-      <h1 className="text-3xl font-bold mb-6 text-pink-700">Iniciar sesión</h1>
+      <h1 className="text-3xl font-bold mb-6 text-pink-700 text-center">
+        Iniciar sesión
+      </h1>
       <form onSubmit={handle} className="space-y-4">
         {error && <div className="text-red-500">{error}</div>}
         <input
@@ -47,7 +49,7 @@ export default function Login() {
           Entrar
         </button>
         <div className="text-sm text-gray-600">
-          ¿No tienes cuenta?{" "}
+          ¿No tienes cuenta?
           <Link to="/register" className="text-pink-600">
             Regístrate
           </Link>

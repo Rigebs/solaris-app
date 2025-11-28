@@ -1,17 +1,36 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { AiOutlineSearch } from "react-icons/ai";
-import { products } from "../../mock/products";
+import { searchProducts } from "../../services/searchService";
+import type { Product } from "../../types/product";
 
 export default function SearchBar() {
   const [query, setQuery] = useState("");
+  const [results, setResults] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const filtered =
-    query.length > 1
-      ? products.filter((p) =>
-          p.name.toLowerCase().includes(query.toLowerCase())
-        )
-      : [];
+  // Debounce search
+  useEffect(() => {
+    if (query.length < 2) {
+      setResults([]);
+      return;
+    }
+
+    setIsLoading(true);
+    const timer = setTimeout(async () => {
+      try {
+        const products = await searchProducts(query);
+        setResults(products);
+      } catch (error) {
+        console.error('Error searching products:', error);
+        setResults([]);
+      } finally {
+        setIsLoading(false);
+      }
+    }, 300); // 300ms debounce
+
+    return () => clearTimeout(timer);
+  }, [query]);
 
   return (
     <div className="relative w-full">
@@ -24,20 +43,44 @@ export default function SearchBar() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
+        {isLoading && (
+          <div className="text-xs text-gray-400">Buscando...</div>
+        )}
       </div>
 
-      {filtered.length > 0 && (
-        <div className="absolute left-0 right-0 bg-white shadow-lg rounded-xl mt-2 z-40 max-h-56 overflow-y-auto">
-          {filtered.map((p) => (
+      {results.length > 0 && (
+        <div className="absolute left-0 right-0 bg-white shadow-lg rounded-xl mt-2 z-40 max-h-96 overflow-y-auto">
+          {results.map((product) => (
             <Link
-              key={p.id}
-              to={`/producto/${p.id}`}
-              className="block px-4 py-2 hover:bg-pink-50"
+              key={product.id}
+              to={`/producto/${product.id}`}
+              className="flex items-center gap-3 px-4 py-3 hover:bg-yellow-50 border-b border-gray-100 last:border-0 transition-colors"
               onClick={() => setQuery("")}
             >
-              {p.name}
+              {product.images && product.images.length > 0 && (
+                <img 
+                  src={product.images[0]} 
+                  alt={product.name}
+                  className="w-12 h-12 object-cover rounded-lg"
+                />
+              )}
+              <div className="flex-1">
+                <div className="font-medium text-gray-800">{product.name}</div>
+                {product.description && (
+                  <div className="text-xs text-gray-500 line-clamp-1">{product.description}</div>
+                )}
+              </div>
+              <div className="text-sm font-semibold text-yellow-600">
+                S/. {product.base_price}
+              </div>
             </Link>
           ))}
+        </div>
+      )}
+
+      {query.length >= 2 && !isLoading && results.length === 0 && (
+        <div className="absolute left-0 right-0 bg-white shadow-lg rounded-xl mt-2 z-40 px-4 py-3 text-center text-gray-500 text-sm">
+          No se encontraron productos
         </div>
       )}
     </div>

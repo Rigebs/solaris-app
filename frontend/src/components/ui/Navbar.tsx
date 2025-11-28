@@ -10,6 +10,7 @@ import {
 
 import { useCart } from "../../context/CartContext";
 import { useWishlist } from "../../context/WishlistContext";
+import { useAuth } from "../../context/AuthContext";
 import SearchBar from "./SearchBar";
 import MobileMenu from "./MobileMenu";
 
@@ -18,6 +19,7 @@ export default function Navbar() {
 
   const { cart } = useCart();
   const { wishlist } = useWishlist();
+  const { user } = useAuth();
   const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
 
   const navigate = useNavigate();
@@ -75,7 +77,7 @@ export default function Navbar() {
         )}
 
         {/* LOGO */}
-        <Link to="/" className="text-2xl font-bold text-yellow-600">
+        <Link to="/" className="text-2xl font-bold text-yellow-600 md:flex-none flex-1 md:flex-initial text-center md:text-left">
           Solaris
         </Link>
 
@@ -93,6 +95,14 @@ export default function Navbar() {
           >
             Sobre Nosotros
           </Link>
+          {user?.is_superuser && (
+            <Link
+              to="/admin"
+              className="hover:text-yellow-600 transition font-semibold text-orange-600"
+            >
+              Admin
+            </Link>
+          )}
         </div>
 
         {/* DESKTOP SEARCH */}
@@ -133,6 +143,19 @@ export default function Navbar() {
             <AiOutlineUser size={24} />
           </Link>
         </div>
+
+        {/* MOBILE CART ICON */}
+        <Link
+          to="/carrito"
+          className="md:hidden relative hover:text-yellow-500 transition mr-4"
+        >
+          <AiOutlineShoppingCart size={24} />
+          {totalItems > 0 && (
+            <span className="absolute -top-2 -right-3 bg-yellow-600 text-white text-xs rounded-full px-2">
+              {totalItems}
+            </span>
+          )}
+        </Link>
 
         {/* MOBILE HAMBURGER */}
         <button

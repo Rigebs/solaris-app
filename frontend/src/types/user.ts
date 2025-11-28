@@ -4,6 +4,7 @@ export interface User {
   email: string;
   address?: string;
   phone?: string;
+  is_superuser?: boolean;
 }
 
 export interface UserUpdate {

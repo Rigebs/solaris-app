@@ -1,17 +1,18 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useCreateOrder } from "../hooks/useCreateOrder";
 import { useNavigate } from "react-router-dom";
 import type { OrderRequest } from "../types/order";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
-import { useUsers } from "../hooks/useUsers";
+import { useToast } from "../context/ToastContext";
+import { userService } from "../services/userService";
 import { formatCurrency } from "../utils/currency";
 
 export default function Checkout() {
   const { cart, clearCart } = useCart();
   const { user, setRedirectAfterLogin } = useAuth();
   const { createOrder, loading } = useCreateOrder();
-  const { updateUser } = useUsers();
+  const { showToast } = useToast();
 
   const nav = useNavigate();
 
@@ -21,6 +22,20 @@ export default function Checkout() {
     address: "",
     phone: "",
   });
+
+  const toastShownRef = useRef(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
+
+  useEffect(() => {
+    if (!user && !toastShownRef.current) {
+      toastShownRef.current = true;
+      showToast("Necesitas iniciar sesión para procesar el pago", "warning");
+      setRedirectAfterLogin("/checkout");
+      setIsRedirecting(true);
+      // Redirigir inmediatamente sin setTimeout
+      nav("/login");
+    }
+  }, [user]);
 
   useEffect(() => {
     if (user) {
@@ -40,22 +55,22 @@ export default function Checkout() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) {
-      // Guardar la URL actual para volver después del login
-      setRedirectAfterLogin("/checkout");
-      return nav("/login");
-    }
 
     if (
-      form.name !== user.name ||
-      form.address !== user.address ||
-      form.phone !== user.phone
+      form.name !== user?.name ||
+      form.address !== user?.address ||
+      form.phone !== user?.phone
     ) {
-      await updateUser({
-        name: form.name,
-        address: form.address,
-        phone: form.phone,
-      });
+      try {
+        await userService.updateMe({
+          name: form.name,
+          address: form.address,
+          phone: form.phone,
+        });
+      } catch (error) {
+        showToast("Error al actualizar datos", "error");
+        return;
+      }
     }
 
     const payload: OrderRequest = {
@@ -86,6 +101,13 @@ export default function Checkout() {
           ¡Pedido realizado!
         </h1>
         <p className="mt-4 text-gray-600">Revisa tus pedidos en tu perfil.</p>
+      </div>
+    );
+
+  if (isRedirecting)
+    return (
+      <div className="text-center py-20">
+        <p className="text-gray-600">Redirigiendo a login...</p>
       </div>
     );
 

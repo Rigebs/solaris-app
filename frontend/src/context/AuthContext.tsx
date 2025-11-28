@@ -4,6 +4,8 @@ import { api } from "../lib/axios";
 
 type AuthCtx = {
   user: User | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
   login: (email: string, password: string) => Promise<boolean>;
   register: (name: string, email: string, password: string) => Promise<boolean>;
   loginWithGoogle: (id_token: string) => Promise<boolean>;
@@ -15,18 +17,33 @@ type AuthCtx = {
 const AuthContext = createContext<AuthCtx | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(() => {
-    const saved = localStorage.getItem("auth_user");
-    return saved ? JSON.parse(saved) : null;
-  });
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [redirectAfterLogin, setRedirectAfterLogin] = useState<string | null>(
     () => localStorage.getItem("redirect_after_login")
   );
 
+  // Cargar usuario inicial
+  useEffect(() => {
+    const saved = localStorage.getItem("auth_user");
+    if (saved) {
+      try {
+        setUser(JSON.parse(saved));
+      } catch (e) {
+        console.error("Error parsing auth_user", e);
+      }
+    }
+    setIsLoading(false);
+  }, []);
+
   // guarda usuario en localStorage
   useEffect(() => {
-    localStorage.setItem("auth_user", JSON.stringify(user));
+    if (user) {
+      localStorage.setItem("auth_user", JSON.stringify(user));
+    } else {
+      localStorage.removeItem("auth_user");
+    }
   }, [user]);
 
   // guarda redirect path en localStorage
@@ -119,12 +136,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setUser(null);
     localStorage.removeItem("token");
     localStorage.removeItem("refresh_token");
+    localStorage.removeItem("auth_user");
   };
 
   return (
     <AuthContext.Provider
       value={{
         user,
+        isAuthenticated: !!user,
+        isLoading,
         login,
         register,
         loginWithGoogle,

@@ -1,4 +1,5 @@
 import { Navigate, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 
 interface ProtectedRouteProps {
@@ -9,9 +10,14 @@ export function PrivateRoute({ children }: ProtectedRouteProps) {
   const { user, setRedirectAfterLogin } = useAuth();
   const location = useLocation();
 
+  useEffect(() => {
+    if (!user) {
+      // Guardar la URL actual para redirigir después del login
+      setRedirectAfterLogin(location.pathname + location.search);
+    }
+  }, [user, location.pathname, location.search, setRedirectAfterLogin]);
+
   if (!user) {
-    // Guardar la URL actual para redirigir después del login
-    setRedirectAfterLogin(location.pathname + location.search);
     return <Navigate to="/login" replace />;
   }
 

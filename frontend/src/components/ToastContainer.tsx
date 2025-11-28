@@ -31,7 +31,7 @@ export function ToastContainer() {
   };
 
   return (
-    <div className="fixed top-24 right-4 z-40 space-y-3 max-w-sm pointer-events-none">
+    <div className="fixed bottom-4 right-4 z-40 space-y-3 max-w-sm pointer-events-none">
       {toasts.map((toast) => (
         <div
           key={toast.id}
