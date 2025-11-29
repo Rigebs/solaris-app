@@ -1,7 +1,14 @@
-import { Link, Outlet, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { useEffect } from 'react';
-import { FiHome, FiShoppingBag, FiFolder, FiPackage, FiSun, FiArrowLeft } from 'react-icons/fi';
+import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { useEffect } from "react";
+import {
+  FiHome,
+  FiShoppingBag,
+  FiFolder,
+  FiPackage,
+  FiSun,
+  FiArrowLeft,
+} from "react-icons/fi";
 
 export default function AdminLayout() {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -9,11 +16,16 @@ export default function AdminLayout() {
 
   useEffect(() => {
     if (!isLoading && (!isAuthenticated || !user?.is_superuser)) {
-      navigate('/');
+      navigate("/");
     }
   }, [isAuthenticated, user, isLoading, navigate]);
 
-  if (isLoading) return <div className="min-h-screen flex items-center justify-center"><div className="text-lg">Cargando...</div></div>;
+  if (isLoading)
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-lg">Cargando...</div>
+      </div>
+    );
 
   if (!isAuthenticated || !user?.is_superuser) return null;
 
@@ -29,37 +41,49 @@ export default function AdminLayout() {
           <p className="text-yellow-100 text-sm mt-1">Panel de Control</p>
         </div>
         <nav className="p-4 space-y-1">
-          <Link 
-            to="/admin/dashboard" 
+          <Link
+            to="/admin/dashboard"
             className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-yellow-50 text-gray-700 hover:text-yellow-600 transition-all group"
           >
-            <FiHome className="group-hover:scale-110 transition-transform" size={20} />
+            <FiHome
+              className="group-hover:scale-110 transition-transform"
+              size={20}
+            />
             <span className="font-medium">Dashboard</span>
           </Link>
-          <Link 
-            to="/admin/products" 
+          <Link
+            to="/admin/products"
             className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-yellow-50 text-gray-700 hover:text-yellow-600 transition-all group"
           >
-            <FiShoppingBag className="group-hover:scale-110 transition-transform" size={20} />
+            <FiShoppingBag
+              className="group-hover:scale-110 transition-transform"
+              size={20}
+            />
             <span className="font-medium">Productos</span>
           </Link>
-          <Link 
-            to="/admin/categories" 
+          <Link
+            to="/admin/categories"
             className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-yellow-50 text-gray-700 hover:text-yellow-600 transition-all group"
           >
-            <FiFolder className="group-hover:scale-110 transition-transform" size={20} />
+            <FiFolder
+              className="group-hover:scale-110 transition-transform"
+              size={20}
+            />
             <span className="font-medium">Categorías</span>
           </Link>
-          <Link 
-            to="/admin/orders" 
+          <Link
+            to="/admin/orders"
             className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-yellow-50 text-gray-700 hover:text-yellow-600 transition-all group"
           >
-            <FiPackage className="group-hover:scale-110 transition-transform" size={20} />
+            <FiPackage
+              className="group-hover:scale-110 transition-transform"
+              size={20}
+            />
             <span className="font-medium">Pedidos</span>
           </Link>
           <div className="pt-6 mt-6 border-t border-gray-200">
-            <Link 
-              to="/" 
+            <Link
+              to="/"
               className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-all"
             >
               <FiArrowLeft size={20} />
@@ -77,30 +101,84 @@ export default function AdminLayout() {
             <FiSun className="text-yellow-600" size={24} />
             <span className="font-bold text-yellow-600">Solaris Admin</span>
           </div>
-          <Link to="/" className="text-sm text-gray-600 hover:text-yellow-600 flex items-center gap-1">
+          <Link
+            to="/"
+            className="text-sm text-gray-600 hover:text-yellow-600 flex items-center gap-1"
+          >
             <FiArrowLeft size={16} />
             <span>Tienda</span>
           </Link>
         </header>
 
         {/* Mobile Nav */}
-        <nav className="lg:hidden bg-white border-b border-yellow-200 p-3 flex gap-2 overflow-x-auto sticky top-16 z-20">
-          <Link to="/admin/dashboard" className="flex items-center gap-2 px-4 py-2 rounded-lg bg-yellow-50 text-yellow-700 whitespace-nowrap text-sm font-medium">
-            <FiHome size={16} />
-            <span>Dashboard</span>
-          </Link>
-          <Link to="/admin/products" className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-yellow-50 text-gray-700 whitespace-nowrap text-sm">
-            <FiShoppingBag size={16} />
-            <span>Productos</span>
-          </Link>
-          <Link to="/admin/categories" className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-yellow-50 text-gray-700 whitespace-nowrap text-sm">
-            <FiFolder size={16} />
-            <span>Categorías</span>
-          </Link>
-          <Link to="/admin/orders" className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-yellow-50 text-gray-700 whitespace-nowrap text-sm">
-            <FiPackage size={16} />
-            <span>Pedidos</span>
-          </Link>
+        <nav className="lg:hidden bg-white border-b border-yellow-200 p-3 flex gap-2 overflow-x-auto sticky top-14 z-20">
+          <NavLink
+            to="/admin/dashboard"
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3 rounded-lg transition-all group ${
+                isActive
+                  ? "bg-yellow-100 text-yellow-700 font-semibold"
+                  : "text-gray-700 hover:bg-yellow-50 hover:text-yellow-600"
+              }`
+            }
+          >
+            <FiHome
+              className="group-hover:scale-110 transition-transform"
+              size={20}
+            />
+            <span className="font-medium">Dashboard</span>
+          </NavLink>
+
+          <NavLink
+            to="/admin/products"
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3 rounded-lg transition-all group ${
+                isActive
+                  ? "bg-yellow-100 text-yellow-700 font-semibold"
+                  : "text-gray-700 hover:bg-yellow-50 hover:text-yellow-600"
+              }`
+            }
+          >
+            <FiShoppingBag
+              className="group-hover:scale-110 transition-transform"
+              size={20}
+            />
+            <span className="font-medium">Productos</span>
+          </NavLink>
+
+          <NavLink
+            to="/admin/categories"
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3 rounded-lg transition-all group ${
+                isActive
+                  ? "bg-yellow-100 text-yellow-700 font-semibold"
+                  : "text-gray-700 hover:bg-yellow-50 hover:text-yellow-600"
+              }`
+            }
+          >
+            <FiFolder
+              className="group-hover:scale-110 transition-transform"
+              size={20}
+            />
+            <span className="font-medium">Categorías</span>
+          </NavLink>
+
+          <NavLink
+            to="/admin/orders"
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3 rounded-lg transition-all group ${
+                isActive
+                  ? "bg-yellow-100 text-yellow-700 font-semibold"
+                  : "text-gray-700 hover:bg-yellow-50 hover:text-yellow-600"
+              }`
+            }
+          >
+            <FiPackage
+              className="group-hover:scale-110 transition-transform"
+              size={20}
+            />
+            <span className="font-medium">Pedidos</span>
+          </NavLink>
         </nav>
 
         {/* Content */}
