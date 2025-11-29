@@ -1,4 +1,3 @@
-import json
 from sqlalchemy.orm import Session, joinedload
 from app.models.product import Product
 from app.models.category import Category
@@ -14,9 +13,10 @@ class CRUDProduct:
         )
 
         if p:
-            p.sizes = json.loads(p.sizes_json or "[]")
-            p.toppings = json.loads(p.toppings_json or "[]")
-            p.images = json.loads(p.images_json or "[]")
+            p.sizes = p.sizes_json or []
+            p.toppings = p.toppings_json or []
+            p.images = p.images_json or []
+            
             p.category_name = p.category.name if p.category else None
 
 
@@ -37,16 +37,16 @@ class CRUDProduct:
         products = query.all()
 
         for p in products:
-            p.sizes = json.loads(p.sizes_json or "[]")
-            p.toppings = json.loads(p.toppings_json or "[]")
-            p.images = json.loads(p.images_json or "[]")
+            p.sizes = p.sizes_json or []
+            p.toppings = p.toppings_json or []
+            p.images = p.images_json or []
+            
             p.category_name = p.category.name if p.category else None
 
 
         return products
 
     def search(self, db: Session, query: str):
-        """Search products by name or description"""
         products = (
             db.query(Product)
             .filter(
@@ -58,9 +58,9 @@ class CRUDProduct:
         )
         
         for product in products:
-            product.images = json.loads(product.images_json or "[]")
-            product.sizes = json.loads(product.sizes_json or "[]")
-            product.toppings = json.loads(product.toppings_json or "[]")
+            product.images = product.images_json or []
+            product.sizes = product.sizes_json or []
+            product.toppings = product.toppings_json or []
         
         return products
 
@@ -70,27 +70,61 @@ class CRUDProduct:
             description=obj_in.description,
             base_price=obj_in.base_price,
             category_id=obj_in.category_id,
-            sizes_json=json.dumps([s.dict() for s in obj_in.sizes]),
-            toppings_json=json.dumps(obj_in.toppings),
-            images_json=json.dumps(obj_in.images),
-            is_active=obj_in.is_active
+            is_active=obj_in.is_active,
         )
+
+        db_obj.sizes_json = [
+            s.model_dump() if hasattr(s, "model_dump") else s
+            for s in obj_in.sizes
+        ]
+        db_obj.toppings_json = obj_in.toppings
+        db_obj.images_json = obj_in.images
 
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
         return db_obj
 
+
     def update(self, db: Session, *, db_obj: Product, obj_in: ProductUpdate):
         update_data = obj_in.model_dump(exclude_unset=True)
-        
-        # Handle JSON fields
+
+        # --- sizes ---
         if "sizes" in update_data:
-            db_obj.sizes_json = json.dumps([s.dict() for s in update_data.pop("sizes")])
+            sizes = update_data.pop("sizes")
+            db_obj.sizes_json = [
+                s.model_dump() if hasattr(s, "model_dump") else s
+                for s in sizes
+            ]
+
+        # --- toppings ---
         if "toppings" in update_data:
-            db_obj.toppings_json = json.dumps(update_data.pop("toppings"))
+            db_obj.toppings_json = update_data.pop("toppings")
+
+        # --- images ---
         if "images" in update_data:
-            db_obj.images_json = json.dumps(update_data.pop("images"))
+            db_obj.images_json = update_data.pop("images")
+
+        # otros campos
+        for field, value in update_data.items():
+            setattr(db_obj, field, value)
+
+        db.add(db_obj)
+        db.commit()
+        db.refresh(db_obj)
+        return db_obj
+
+        update_data = obj_in.model_dump(exclude_unset=True)
+        
+        if "sizes" in update_data:
+            db_obj.sizes_json = [s.model_dump() for s in update_data.pop("sizes")]
+            
+        if "toppings" in update_data:
+            db_obj.toppings_json = update_data.pop("toppings")
+            
+        if "images" in update_data:
+            db_obj.images_json = update_data.pop("images")
+
 
         for field, value in update_data.items():
             setattr(db_obj, field, value)

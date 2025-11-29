@@ -16,14 +16,13 @@ class CRUDOrder:
         db.commit()
         db.refresh(order)
 
-        # Add order items
         for it in order_in.items:
             item = OrderItem(
                 order_id=order.id,
                 product_id=it.product_id,
                 name=it.name,
                 size=it.size,
-                toppings=it.toppings or [],  # ya es lista
+                toppings=it.toppings or [],
                 notes=it.notes,
                 unit_price=it.unit_price,
                 quantity=it.quantity,
@@ -41,7 +40,7 @@ class CRUDOrder:
         orders = (
             db.query(Order)
             .options(
-                selectinload(Order.items).selectinload(OrderItem.product)  # carga los productos
+                selectinload(Order.items).selectinload(OrderItem.product)
             )
             .filter(Order.user_id == user_id)
             .order_by(Order.created_at.desc())
@@ -51,9 +50,10 @@ class CRUDOrder:
         for order in orders:
             for item in order.items:
                 if item.product:
-                    item.product.images = json.loads(item.product.images_json or "[]")
-                    item.product.sizes = json.loads(item.product.sizes_json or "[]")
-                    item.product.toppings = json.loads(item.product.toppings_json or "[]")
+                    # Corrección aplicada aquí
+                    item.product.images = item.product.images_json or []
+                    item.product.sizes = item.product.sizes_json or []
+                    item.product.toppings = item.product.toppings_json or []
 
         return orders
 
@@ -71,9 +71,10 @@ class CRUDOrder:
         for order in orders:
             for item in order.items:
                 if item.product:
-                    item.product.images = json.loads(item.product.images_json or "[]")
-                    item.product.sizes = json.loads(item.product.sizes_json or "[]")
-                    item.product.toppings = json.loads(item.product.toppings_json or "[]")
+                    # Corrección aplicada aquí
+                    item.product.images = item.product.images_json or []
+                    item.product.sizes = item.product.sizes_json or []
+                    item.product.toppings = item.product.toppings_json or []
 
         return orders
 

@@ -2,10 +2,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
-from app.api.routes import auth, orders, products, categories, users, admin
-import logging
-
-logger = logging.getLogger(__name__)
+from app.api.routes import auth, orders, products, categories, users, admin, images
+import app.core.cloudinary 
 
 def get_application() -> FastAPI:
     app = FastAPI(
@@ -24,6 +22,7 @@ def get_application() -> FastAPI:
 
 
     app.include_router(auth.router, prefix="/api")
+    app.include_router(images.router, prefix="/api")
     app.include_router(products.router, prefix="/api")
     app.include_router(categories.router, prefix="/api")
     app.include_router(orders.router, prefix="/api")
@@ -33,8 +32,6 @@ def get_application() -> FastAPI:
     @app.get("/health")
     def health():
         return {"status": "ok"}
-
-    logger.info(f"Aplicación iniciada: {settings.app_name}")
 
     return app
 

@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, Float, Text, ForeignKey, Boolean
+from sqlalchemy.dialects.mysql import JSON
 from sqlalchemy.orm import relationship
 from app.db.base import Base
 
@@ -11,8 +12,8 @@ class Product(Base):
     category_id = Column(Integer, ForeignKey("categories.id"))
     category = relationship("Category", backref="products")
 
-    sizes_json = Column(String(1000), nullable=True)
-    toppings_json = Column(String(1000), nullable=True)
+    sizes_json = Column(JSON, nullable=True, default=[]) 
+    toppings_json = Column(JSON, nullable=True, default=[])
 
-    images_json = Column(Text, nullable=True)
+    images_json = Column(JSON, nullable=True, default=[])
     is_active = Column(Boolean, default=True)
