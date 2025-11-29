@@ -1,29 +1,19 @@
 import { Link } from "react-router-dom";
 import { FaChevronRight } from "react-icons/fa";
-import { useEffect, useState } from "react";
-import { getCategories } from "../services/categoryService";
-import type { Category } from "../types/category";
+import { useCategories } from "../hooks";
 
 export default function Catalog() {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const data = await getCategories();
-        setCategories(data);
-      } catch (err) {
-        console.error("Error cargando categorías:", err);
-      }
-      setLoading(false);
-    };
-
-    load();
-  }, []);
+  const { categories, loading, error } = useCategories();
 
   if (loading)
-    return <p className="text-center text-gray-600 mt-10">Cargando...</p>;
+    return (
+      <div className="text-center text-gray-600 mt-10">
+        Cargando categorías...
+      </div>
+    );
+
+  if (error)
+    return <div className="text-center text-red-600 mt-10">Error: {error}</div>;
 
   return (
     <div className="max-w-4xl mx-auto px-4">

@@ -1,29 +1,9 @@
-import { Link } from 'react-router-dom';
-import { FiPackage, FiShoppingBag, FiFolder, FiSun } from 'react-icons/fi';
-import { useEffect, useState } from 'react';
-import { adminService } from '../../services/adminService';
+import { Link } from "react-router-dom";
+import { FiPackage, FiShoppingBag, FiFolder, FiSun } from "react-icons/fi";
+import { useAdminStats } from "../../hooks";
 
 export default function AdminDashboard() {
-  const [stats, setStats] = useState({
-    products: 0,
-    categories: 0,
-    orders: 0,
-  });
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const stats = await adminService.getStats();
-        setStats(stats);
-      } catch (error) {
-        console.error('Error fetching stats:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchStats();
-  }, []);
+  const { stats, loading } = useAdminStats();
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -46,7 +26,7 @@ export default function AdminDashboard() {
           <div className="flex items-center justify-between mb-4">
             <FiShoppingBag size={32} className="opacity-80" />
             <span className="text-3xl font-bold">
-              {isLoading ? '...' : stats.products}
+              {loading ? "..." : stats.products}
             </span>
           </div>
           <h3 className="text-lg font-semibold mb-1">Productos</h3>
@@ -57,7 +37,7 @@ export default function AdminDashboard() {
           <div className="flex items-center justify-between mb-4">
             <FiFolder size={32} className="opacity-80" />
             <span className="text-3xl font-bold">
-              {isLoading ? '...' : stats.categories}
+              {loading ? "..." : stats.categories}
             </span>
           </div>
           <h3 className="text-lg font-semibold mb-1">Categorías</h3>
@@ -68,7 +48,7 @@ export default function AdminDashboard() {
           <div className="flex items-center justify-between mb-4">
             <FiPackage size={32} className="opacity-80" />
             <span className="text-3xl font-bold">
-              {isLoading ? '...' : stats.orders}
+              {loading ? "..." : stats.orders}
             </span>
           </div>
           <h3 className="text-lg font-semibold mb-1">Pedidos</h3>
@@ -78,23 +58,27 @@ export default function AdminDashboard() {
 
       {/* Action Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <Link 
-          to="/admin/products" 
+        <Link
+          to="/admin/products"
           className="group bg-white rounded-xl shadow-md hover:shadow-xl transition-all p-8 border-2 border-transparent hover:border-yellow-400"
         >
           <div className="bg-gradient-to-br from-yellow-100 to-orange-100 w-16 h-16 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
             <FiShoppingBag className="text-yellow-600" size={32} />
           </div>
           <h3 className="text-xl font-bold mb-2 text-gray-800">Productos</h3>
-          <p className="text-gray-600 mb-4">Gestiona tu catálogo de productos</p>
+          <p className="text-gray-600 mb-4">
+            Gestiona tu catálogo de productos
+          </p>
           <span className="text-yellow-600 font-medium group-hover:gap-2 flex items-center">
-            Ir a productos 
-            <span className="group-hover:translate-x-1 transition-transform">→</span>
+            Ir a productos
+            <span className="group-hover:translate-x-1 transition-transform">
+              →
+            </span>
           </span>
         </Link>
-        
-        <Link 
-          to="/admin/categories" 
+
+        <Link
+          to="/admin/categories"
           className="group bg-white rounded-xl shadow-md hover:shadow-xl transition-all p-8 border-2 border-transparent hover:border-blue-400"
         >
           <div className="bg-gradient-to-br from-blue-100 to-indigo-100 w-16 h-16 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
@@ -103,23 +87,29 @@ export default function AdminDashboard() {
           <h3 className="text-xl font-bold mb-2 text-gray-800">Categorías</h3>
           <p className="text-gray-600 mb-4">Organiza tus productos</p>
           <span className="text-blue-600 font-medium group-hover:gap-2 flex items-center">
-            Ir a categorías 
-            <span className="group-hover:translate-x-1 transition-transform">→</span>
+            Ir a categorías
+            <span className="group-hover:translate-x-1 transition-transform">
+              →
+            </span>
           </span>
         </Link>
-        
-        <Link 
-          to="/admin/orders" 
+
+        <Link
+          to="/admin/orders"
           className="group bg-white rounded-xl shadow-md hover:shadow-xl transition-all p-8 border-2 border-transparent hover:border-green-400"
         >
           <div className="bg-gradient-to-br from-green-100 to-emerald-100 w-16 h-16 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
             <FiPackage className="text-green-600" size={32} />
           </div>
           <h3 className="text-xl font-bold mb-2 text-gray-800">Pedidos</h3>
-          <p className="text-gray-600 mb-4">Revisa los pedidos de tus clientes</p>
+          <p className="text-gray-600 mb-4">
+            Revisa los pedidos de tus clientes
+          </p>
           <span className="text-green-600 font-medium group-hover:gap-2 flex items-center">
-            Ver pedidos 
-            <span className="group-hover:translate-x-1 transition-transform">→</span>
+            Ver pedidos
+            <span className="group-hover:translate-x-1 transition-transform">
+              →
+            </span>
           </span>
         </Link>
       </div>

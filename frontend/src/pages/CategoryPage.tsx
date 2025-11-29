@@ -1,38 +1,22 @@
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { getProductsByCategory } from "../services/productService";
-import type { Product } from "../types/product";
-import ProductCard from "../components/ProductCard";
+import ProductList from "../components/ProductList";
+import { useProducts } from "../hooks";
 
 export default function CategoryPage() {
-  const { id } = useParams(); // viene de /categoria/1
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { id } = useParams();
+  const categoryId = id ? Number(id) : 0;
+  const { products, loading, error } = useProducts(categoryId);
 
-  useEffect(() => {
-    if (!id) return;
-
-    const fetchData = async () => {
-      try {
-        const data = await getProductsByCategory(Number(id));
-        setProducts(data);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [id]);
-
-  if (loading)
-    return (
-      <p className="text-center py-10 text-yellow-700 font-semibold">
-        Cargando productos...
-      </p>
-    );
-
-  // Nombre de categoría (opcional)
+  // Obtener nombre de la categoría (si está disponible en algún producto)
   const categoryName = products[0]?.category_name || "Productos";
+
+  if (error) {
+    return (
+      <div className="max-w-5xl mx-auto px-4">
+        <p className="text-center py-10 text-red-600 font-semibold">{error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-5xl mx-auto px-4 pb-10">
@@ -40,18 +24,11 @@ export default function CategoryPage() {
         {categoryName}
       </h1>
 
-      {/* Si no hay productos */}
-      {products.length === 0 && (
-        <p className="text-gray-600 text-lg">
-          No hay productos en esta categoría.
-        </p>
-      )}
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {products.map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
-      </div>
+      <ProductList
+        products={products}
+        isLoading={loading}
+        emptyMessage="No hay productos en esta categoría"
+      />
     </div>
   );
 }

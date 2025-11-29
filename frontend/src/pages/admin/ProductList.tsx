@@ -1,43 +1,12 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { FiEdit2, FiTrash2, FiPlus, FiShoppingBag } from 'react-icons/fi';
-import { adminService } from '../../services/adminService';
-import { getProducts } from '../../services/productService';
-import type { Product } from '../../types/product';
-import { formatCurrencySimple } from '../../utils/currency';
+import { Link } from "react-router-dom";
+import { FiEdit2, FiTrash2, FiPlus, FiShoppingBag } from "react-icons/fi";
+import { useAdminProducts } from "../../hooks";
+import { formatCurrencySimple } from "../../utils/currency";
 
-export default function ProductList() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+export default function AdminProductList() {
+  const { products, loading, deleteProduct } = useAdminProducts();
 
-  const fetchProducts = async () => {
-    try {
-      const data = await getProducts();
-      setProducts(data);
-    } catch (error) {
-      console.error('Error fetching products:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  const handleDelete = async (id: number) => {
-    if (window.confirm('¿Estás seguro de eliminar este producto?')) {
-      try {
-        await adminService.deleteProduct(id);
-        fetchProducts();
-      } catch (error) {
-        console.error('Error deleting product:', error);
-        alert('Error al eliminar producto');
-      }
-    }
-  };
-
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="text-lg text-gray-600">Cargando productos...</div>
@@ -53,11 +22,13 @@ export default function ProductList() {
           <FiShoppingBag className="text-yellow-600" size={32} />
           <div>
             <h2 className="text-3xl font-bold text-gray-800">Productos</h2>
-            <p className="text-gray-600 mt-1">Gestiona tu catálogo de productos</p>
+            <p className="text-gray-600 mt-1">
+              Gestiona tu catálogo de productos
+            </p>
           </div>
         </div>
-        <Link 
-          to="/admin/products/new" 
+        <Link
+          to="/admin/products/new"
           className="flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all font-medium"
         >
           <FiPlus size={20} />
@@ -68,16 +39,16 @@ export default function ProductList() {
       {/* Products Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {products.map((product) => (
-          <div 
-            key={product.id} 
+          <div
+            key={product.id}
             className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all overflow-hidden border border-yellow-100"
           >
             {/* Product Image */}
             <div className="h-48 bg-gradient-to-br from-yellow-100 to-orange-100 flex items-center justify-center">
               {product.images && product.images.length > 0 ? (
-                <img 
-                  src={product.images[0]} 
-                  alt={product.name} 
+                <img
+                  src={product.images[0]}
+                  alt={product.name}
                   className="w-full h-full object-cover"
                 />
               ) : (
@@ -88,12 +59,16 @@ export default function ProductList() {
             {/* Product Info */}
             <div className="p-5">
               <div className="flex justify-between items-start mb-2">
-                <h3 className="font-bold text-lg text-gray-800 line-clamp-1">{product.name}</h3>
-                <span className="text-yellow-600 font-bold text-lg">{formatCurrencySimple(product.base_price)}</span>
+                <h3 className="font-bold text-lg text-gray-800 line-clamp-1">
+                  {product.name}
+                </h3>
+                <span className="text-yellow-600 font-bold text-lg">
+                  {formatCurrencySimple(product.base_price)}
+                </span>
               </div>
-              
+
               <p className="text-sm text-gray-600 mb-3">
-                {product.category_name || 'Sin categoría'}
+                {product.category_name || "Sin categoría"}
               </p>
 
               {product.description && (
@@ -104,15 +79,15 @@ export default function ProductList() {
 
               {/* Actions */}
               <div className="flex gap-2 pt-3 border-t border-gray-100">
-                <Link 
+                <Link
                   to={`/admin/products/edit/${product.id}`}
                   className="flex-1 flex items-center justify-center gap-2 bg-blue-50 text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-100 transition-colors font-medium"
                 >
                   <FiEdit2 size={16} />
                   <span className="hidden sm:inline">Editar</span>
                 </Link>
-                <button 
-                  onClick={() => handleDelete(product.id)}
+                <button
+                  onClick={() => deleteProduct(product.id)}
                   className="flex-1 flex items-center justify-center gap-2 bg-red-50 text-red-600 px-4 py-2 rounded-lg hover:bg-red-100 transition-colors font-medium"
                 >
                   <FiTrash2 size={16} />
@@ -128,7 +103,7 @@ export default function ProductList() {
         <div className="text-center py-12 bg-white rounded-xl shadow-md">
           <FiShoppingBag className="text-gray-400 mx-auto mb-4" size={64} />
           <p className="text-gray-600 text-lg">No hay productos aún</p>
-          <Link 
+          <Link
             to="/admin/products/new"
             className="inline-block mt-4 text-yellow-600 hover:text-yellow-700 font-medium"
           >

@@ -6,7 +6,7 @@
  */
 export const formatCurrency = (value: number, decimals: number = 2): string => {
   const formatted = value.toFixed(decimals);
-  return `S/. ${formatted}`;
+  return `S/ ${formatted}`;
 };
 
 /**

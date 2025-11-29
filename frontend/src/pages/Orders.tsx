@@ -1,12 +1,10 @@
 import { useAuth } from "../context/AuthContext";
 import PageWrapper from "../components/ui/PageWrapper";
-import OrderCard from "../components/OrderCard";
+import OrderList from "../components/OrderList";
 import { useOrders } from "../hooks/useOrders";
 
 export default function Orders() {
   const { user } = useAuth();
-
-  // Usamos el hook pasando el userId
   const { orders, loading, error } = useOrders(user?.id ?? 0);
 
   if (!user)
@@ -27,25 +25,12 @@ export default function Orders() {
     <PageWrapper>
       <h1 className="text-3xl font-bold text-yellow-700 mb-6">Mis pedidos</h1>
 
-      {loading ? (
-        <div className="text-gray-600 text-center py-20">
-          Cargando pedidos...
-        </div>
-      ) : error ? (
-        <div className="text-red-600 text-center py-20">
-          Error al cargar los pedidos.
-        </div>
-      ) : orders.length === 0 ? (
-        <div className="text-gray-600 text-center py-20">
-          Aún no tienes pedidos.
-        </div>
-      ) : (
-        <div className="space-y-8">
-          {orders.map((o) => (
-            <OrderCard key={o.id} order={o} />
-          ))}
-        </div>
-      )}
+      <OrderList
+        orders={orders}
+        isLoading={loading}
+        error={error}
+        emptyMessage="Aún no tienes pedidos"
+      />
     </PageWrapper>
   );
 }
