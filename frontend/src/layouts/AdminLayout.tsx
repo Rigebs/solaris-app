@@ -31,7 +31,6 @@ export default function AdminLayout() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-orange-50 to-yellow-100">
-      {/* Sidebar */}
       <aside className="fixed left-0 top-0 h-full w-64 bg-white shadow-xl z-40 hidden lg:block border-r border-yellow-200">
         <div className="p-6 border-b border-yellow-200 bg-gradient-to-r from-yellow-500 to-orange-500">
           <div className="flex items-center gap-2">
@@ -41,46 +40,70 @@ export default function AdminLayout() {
           <p className="text-yellow-100 text-sm mt-1">Panel de Control</p>
         </div>
         <nav className="p-4 space-y-1">
-          <Link
+          <NavLink
             to="/admin/dashboard"
-            className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-yellow-50 text-gray-700 hover:text-yellow-600 transition-all group"
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3 rounded-lg transition-all group ${
+                isActive
+                  ? "bg-yellow-100 text-yellow-700 font-semibold"
+                  : "hover:bg-yellow-50 text-gray-700 hover:text-yellow-600"
+              }`
+            }
           >
             <FiHome
               className="group-hover:scale-110 transition-transform"
               size={20}
             />
             <span className="font-medium">Dashboard</span>
-          </Link>
-          <Link
+          </NavLink>
+          <NavLink
             to="/admin/products"
-            className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-yellow-50 text-gray-700 hover:text-yellow-600 transition-all group"
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3 rounded-lg transition-all group ${
+                isActive
+                  ? "bg-yellow-100 text-yellow-700 font-semibold"
+                  : "hover:bg-yellow-50 text-gray-700 hover:text-yellow-600"
+              }`
+            }
           >
             <FiShoppingBag
               className="group-hover:scale-110 transition-transform"
               size={20}
             />
             <span className="font-medium">Productos</span>
-          </Link>
-          <Link
+          </NavLink>
+          <NavLink
             to="/admin/categories"
-            className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-yellow-50 text-gray-700 hover:text-yellow-600 transition-all group"
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3 rounded-lg transition-all group ${
+                isActive
+                  ? "bg-yellow-100 text-yellow-700 font-semibold"
+                  : "hover:bg-yellow-50 text-gray-700 hover:text-yellow-600"
+              }`
+            }
           >
             <FiFolder
               className="group-hover:scale-110 transition-transform"
               size={20}
             />
             <span className="font-medium">Categorías</span>
-          </Link>
-          <Link
+          </NavLink>
+          <NavLink
             to="/admin/orders"
-            className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-yellow-50 text-gray-700 hover:text-yellow-600 transition-all group"
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3 rounded-lg transition-all group ${
+                isActive
+                  ? "bg-yellow-100 text-yellow-700 font-semibold"
+                  : "hover:bg-yellow-50 text-gray-700 hover:text-yellow-600"
+              }`
+            }
           >
             <FiPackage
               className="group-hover:scale-110 transition-transform"
               size={20}
             />
             <span className="font-medium">Pedidos</span>
-          </Link>
+          </NavLink>
           <div className="pt-6 mt-6 border-t border-gray-200">
             <Link
               to="/"
@@ -93,9 +116,7 @@ export default function AdminLayout() {
         </nav>
       </aside>
 
-      {/* Main Content */}
       <div className="lg:ml-64">
-        {/* Mobile Header */}
         <header className="lg:hidden bg-white shadow-sm p-4 flex justify-between items-center sticky top-0 z-30 border-b border-yellow-200">
           <div className="flex items-center gap-2">
             <FiSun className="text-yellow-600" size={24} />
@@ -110,7 +131,6 @@ export default function AdminLayout() {
           </Link>
         </header>
 
-        {/* Mobile Nav */}
         <nav className="lg:hidden bg-white border-b border-yellow-200 p-3 flex gap-2 overflow-x-auto sticky top-14 z-20">
           <NavLink
             to="/admin/dashboard"
@@ -181,7 +201,6 @@ export default function AdminLayout() {
           </NavLink>
         </nav>
 
-        {/* Content */}
         <main className="p-4 md:p-8">
           <Outlet />
         </main>
