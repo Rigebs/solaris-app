@@ -16,8 +16,10 @@ export type Order = {
   id: number;
   user_id: number;
   total: number;
-  status: "pending" | "completed" | "cancelled";
+  status: "pending" | "in_progress" | "ready" | "completed" | "cancelled";
   created_at: string;
+  updated_at?: string;
+  admin_notes?: string;
   items: OrderItem[];
 };
 

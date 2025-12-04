@@ -26,6 +26,12 @@ export default function OrderCard({ order }: OrderCardProps) {
                 ? "bg-green-100 text-green-700"
                 : order.status === "pending"
                 ? "bg-yellow-100 text-yellow-700"
+                : order.status === "in_progress"
+                ? "bg-orange-100 text-orange-700"
+                : order.status === "ready"
+                ? "bg-blue-100 text-blue-700"
+                : order.status === "cancelled"
+                ? "bg-red-100 text-red-700"
                 : "bg-gray-200 text-gray-600"
             }
           `}
@@ -34,7 +40,13 @@ export default function OrderCard({ order }: OrderCardProps) {
             ? "Completado"
             : order.status === "pending"
             ? "Pendiente"
-            : "Cancelado"}
+            : order.status === "in_progress"
+            ? "En preparación"
+            : order.status === "ready"
+            ? "Listo para entregar"
+            : order.status === "cancelled"
+            ? "Cancelado"
+            : order.status}
         </span>
       </div>
 
