@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.api.deps import get_current_user, get_current_active_superuser
 from app import crud
-from app.schemas.order import OrderCreate, OrderRead
+from app.schemas.order import OrderCreate, OrderRead, OrderUpdate
 from typing import List
 
 router = APIRouter(prefix="/orders", tags=["orders"])
@@ -44,5 +44,19 @@ def get_order_by_id(
 ):
     order = crud.order.get(db, order_id)
     if not order or order.user_id != current_user.id:
+        raise HTTPException(status_code=404, detail="Order not found")
+    return order
+
+
+@router.put("/{order_id}", response_model=OrderRead)
+def update_order_status(
+    order_id: int,
+    order_update: OrderUpdate,
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_active_superuser),
+):
+    """Admin endpoint to update order status and add notes"""
+    order = crud.order.update_status(db, order_id, order_update)
+    if not order:
         raise HTTPException(status_code=404, detail="Order not found")
     return order

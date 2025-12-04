@@ -29,6 +29,11 @@ class OrderCreate(BaseModel):
     total: float
 
 
+class OrderUpdate(BaseModel):
+    status: str
+    admin_notes: Optional[str] = None
+
+
 class OrderRead(BaseModel):
     id: int
     user_id: int
@@ -36,6 +41,8 @@ class OrderRead(BaseModel):
     total: float
     status: str
     created_at: datetime
+    updated_at: Optional[datetime] = None
+    admin_notes: Optional[str] = None
     items: List[OrderItemRead] = []
 
     class Config:

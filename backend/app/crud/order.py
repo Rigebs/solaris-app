@@ -2,7 +2,7 @@ import json
 from sqlalchemy.orm import Session
 from app.models.order import Order
 from app.models.order_item import OrderItem
-from app.schemas.order import OrderCreate
+from app.schemas.order import OrderCreate, OrderUpdate
 from sqlalchemy.orm import selectinload
 
 class CRUDOrder:
@@ -77,5 +77,26 @@ class CRUDOrder:
                     item.product.toppings = item.product.toppings_json or []
 
         return orders
+
+    def update_status(self, db: Session, order_id: int, order_update: OrderUpdate):
+        """Update order status and admin notes"""
+        order = db.query(Order).filter(Order.id == order_id).first()
+        if not order:
+            return None
+        
+        order.status = order_update.status
+        if order_update.admin_notes is not None:
+            order.admin_notes = order_update.admin_notes
+        
+        db.add(order)
+        db.commit()
+        db.refresh(order)
+        return order
+
+    def enrich_order_with_user_info(self, order):
+        """Add user name to order object"""
+        if order.user:
+            order.user_name = order.user.name
+        return order
 
 order = CRUDOrder()
