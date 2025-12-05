@@ -79,19 +79,50 @@ class CRUDOrder:
         return orders
 
     def update_status(self, db: Session, order_id: int, order_update: OrderUpdate):
-        """Update order status and admin notes"""
+        
+        # 1. Obtener y aplicar la actualización (Estado y Notas)
         order = db.query(Order).filter(Order.id == order_id).first()
         if not order:
             return None
         
+        # Aplicar las actualizaciones básicas
         order.status = order_update.status
         if order_update.admin_notes is not None:
             order.admin_notes = order_update.admin_notes
         
         db.add(order)
         db.commit()
-        db.refresh(order)
-        return order
+        # No usamos db.refresh(order) aquí. En su lugar, haremos una consulta
+        # con selectinload para garantizar que las relaciones se carguen.
+
+        # 2. Cargar el pedido enriquecido con relaciones anidadas
+        # Esto asegura que Order.items y OrderItem.product estén cargados 
+        # para que la serialización funcione correctamente.
+        enriched_order = (
+            db.query(Order)
+            .options(
+                selectinload(Order.items).selectinload(OrderItem.product)
+            )
+            .filter(Order.id == order_id) 
+            .first() 
+        )
+
+        if enriched_order:
+            # 3. Post-procesamiento: Deserializar los campos JSON del producto
+            # Este paso es CRUCIAL y corrige el problema de las imágenes vacías [].
+            for item in enriched_order.items:
+                if item.product:
+                    # Mapear los campos JSON de la DB (e.g., images_json) a los atributos 
+                    # de lista de Python (e.g., images) para la serialización.
+                    item.product.images = item.product.images_json or []
+                    item.product.sizes = item.product.sizes_json or []
+                    item.product.toppings = item.product.toppings_json or []
+            
+        # Opcional: Si tienes una función para enriquecer la orden con información del usuario
+        # return self.enrich_order_with_user_info(enriched_order) 
+        
+        # Devolver el objeto de pedido completamente cargado y procesado
+        return enriched_order
 
     def enrich_order_with_user_info(self, order):
         """Add user name to order object"""

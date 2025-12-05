@@ -26,41 +26,49 @@ export default function Navbar() {
   const location = useLocation();
 
   // Rutas donde NO debe aparecer el botón de volver
-  const hideBackOn = ["/", "/catalogo", "/contacto", "/sobre-nosotros"];
+  const hideBackOn = ["/", "/contacto", "/sobre-nosotros"];
   const showBackButton = !hideBackOn.includes(location.pathname);
 
   const handleBack = () => {
-    // Si estamos en el flujo de checkout, llevar al carrito
-    if (location.pathname.startsWith("/checkout")) {
+    const currentPath = location.pathname;
+
+    // 1. Manejo del flujo de Checkout 🛒: Forzar siempre a /carrito.
+    if (currentPath.startsWith("/checkout")) {
+      // Usamos replace para que /carrito reemplace a /checkout en el historial
       return navigate("/carrito", { replace: true });
     }
 
-    // Si estamos en /pedidos o viendo un pedido, ir a /cuenta
-    if (
-      location.pathname.startsWith("/pedido") ||
-      location.pathname.startsWith("/pedidos")
-    ) {
+    // 2. Manejo de Flujos de Cuenta (Pedidos y Cuenta) 👤: Forzar a /cuenta, o a home.
+    // Es importante usar 'navigate(-1)' en detalle de pedido para volver a la lista /pedidos
+
+    if (currentPath.startsWith("/pedido/")) {
+      // Detalle de un pedido
+      // Intenta volver a la lista de pedidos o cuenta
+      return navigate(-1);
+    }
+
+    if (currentPath === "/pedidos") {
+      // Lista de pedidos
+      // Forzar ir a /cuenta para evitar volver a una página interna anterior
       return navigate("/cuenta", { replace: true });
     }
 
-    // Si estamos en /cuenta, favoritos o carrito, ir a home
-    // (no usar historial para evitar ciclos)
+    // 3. Manejo de Rutas de Nivel Superior (Evita ciclos) 🏠:
+    // Si estamos en Favoritos, Carrito, o Cuenta, forzar ir a Home.
+    // Esto previene que si el usuario navega: Home -> Carrito, al presionar Back
+    // vaya Home -> Carrito -> Home -> Carrito, etc.
     if (
-      location.pathname === "/cuenta" ||
-      location.pathname === "/favoritos" ||
-      location.pathname === "/carrito"
+      currentPath === "/cuenta" ||
+      currentPath === "/favoritos" ||
+      currentPath === "/carrito"
     ) {
       return navigate("/", { replace: true });
     }
 
-    // Si estamos en detalle de producto, usar historial (-1)
-    // Esto lleva a donde vino (home, catalogo, busqueda, etc)
-    if (location.pathname.startsWith("/producto")) {
-      return navigate(-1);
-    }
-
-    // Por defecto, ir a home
-    navigate("/", { replace: true });
+    // 4. CASO POR DEFECTO: USAR EL HISTORIAL DEL NAVEGADOR 🔙.
+    // Esto cubre la mayoría de las rutas de navegación (catálogo, producto/ID, categoria/ID, etc.).
+    // Soluciona tu problema: /categoria/4 -> /catalogo
+    navigate(-1);
   };
 
   return (
@@ -77,7 +85,10 @@ export default function Navbar() {
         )}
 
         {/* LOGO */}
-        <Link to="/" className="text-2xl font-bold text-yellow-600 md:flex-none flex-1 md:flex-initial text-center md:text-left">
+        <Link
+          to="/"
+          className="text-2xl font-bold text-yellow-600 md:flex-none flex-1 md:flex-initial text-center md:text-left"
+        >
           Solaris
         </Link>
 
